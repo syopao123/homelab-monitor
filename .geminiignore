@@ -1,0 +1,6 @@
+# Explicitly ignore local configuration files that might contain secrets
+appsettings.Local.json
+*.env
+*.pfx
+*.key
+.DS_Store
