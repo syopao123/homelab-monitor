@@ -9,4 +9,9 @@
   <ItemGroup>
     <PackageReference Include="MudBlazor" Version="9.2.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Components/Custom/" />
+    <Folder Include="Components/Custom/Dashboard/" />
+  </ItemGroup>
 </Project>

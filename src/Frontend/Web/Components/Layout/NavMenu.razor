@@ -1,4 +1,4 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@* <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">Web</a>
     </div>
@@ -10,13 +10,13 @@
     <nav class="nav flex-column">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Dashboard
             </NavLink>
         </div>
 
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
+                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Compute
             </NavLink>
         </div>
 
@@ -26,5 +26,58 @@
             </NavLink>
         </div>
     </nav>
-</div>
+</div> *@
 
+@* <MudPaper Width="250px" Class="d-inline-flex" Style="min-height: 100vh;" Elevation="0">
+    <MudNavMenu Class="mud-width-full p-2" Style="background-color: #5b21b6; color: white;">
+        <MudText Typo="Typo.h5" Class="px-4">HomeLab Monitor</MudText>
+        <MudText Typo="Typo.body2" Class="px-4 mud-text-light">Proxmox Monitor</MudText>
+        <MudDivider Class="my-2" />
+        <MudNavLink Href="/" Icon="@Icons.Material.Filled.Dashboard">Dashboard</MudNavLink>
+        <MudNavLink Href="/servers" Icon="@Icons.Material.Filled.Storage">Servers</MudNavLink>
+        <MudNavLink Href="/billing" Icon="@Icons.Material.Filled.Receipt" Disabled="true">Billing</MudNavLink>
+        <MudNavGroup Title="Settings" Icon="@Icons.Material.Filled.Settings" Expanded="true">
+            <MudNavLink Href="/users" Icon="@Icons.Material.Filled.People" IconColor="Color.Success">Users
+            </MudNavLink>
+            <MudNavLink Href="/security" Icon="@Icons.Material.Filled.Security" IconColor="Color.Info">Security
+            </MudNavLink>
+        </MudNavGroup>
+    </MudNavMenu>
+</MudPaper> *@
+
+<MudDrawer @bind-Open="@DrawerIsOpen" Elevation="1">
+    <MudDrawerHeader Class="align-items-center">
+        <MudText Typo="Typo.h6">HomeLab Monitor</MudText>
+    </MudDrawerHeader>
+    <MudNavMenu>
+        <MudNavLink Icon="@Icons.Material.Filled.Dashboard" Href="/" Match="NavLinkMatch.All">Dashboard</MudNavLink>
+        <MudNavLink Icon="@Icons.Material.Filled.Computer" Href="/compute" Match="NavLinkMatch.All">Compute</MudNavLink>
+        <MudNavLink Icon="@Icons.Material.Filled.Storage" Href="/storage" Match="NavLinkMatch.All">Storage</MudNavLink>
+        <MudNavLink Icon="@Icons.Material.Filled.Event" Href="/activity-log" Match="NavLinkMatch.All">Activity Log
+        </MudNavLink>
+        <MudNavLink Icon="@Icons.Material.Filled.Settings" Href="/settings" Match="NavLinkMatch.All">Settings
+        </MudNavLink>
+    </MudNavMenu>
+
+    <MudSpacer />
+    <MudStack Class="m-4" Row="true" AlignItems="AlignItems.Center">
+        <MudPaper Elevation="0" Style="background-color: transparent;">
+            <MudIcon Icon="@Icons.Material.Filled.Person" Size="Size.Large" />
+        </MudPaper>
+        <MudPaper Elevation="0" Style="background-color: transparent;">
+            <MudStack Row="false" Spacing="0">
+                <MudPaper Elevation="0" Style="background-color: transparent;">
+                    <MudText Typo="Typo.body1">Admin</MudText>
+                </MudPaper>
+                <MudPaper Elevation="0" Style="background-color: transparent;">
+                    <MudText Typo="Typo.body2">admin@homelab</MudText>
+                </MudPaper>
+            </MudStack>
+        </MudPaper>
+    </MudStack>
+</MudDrawer>
+
+@code {
+    [Parameter]
+    public bool DrawerIsOpen { get; set; }
+}

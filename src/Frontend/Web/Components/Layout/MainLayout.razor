@@ -1,7 +1,7 @@
 ﻿@inherits LayoutComponentBase
 
 @* Required *@
-<MudThemeProvider />
+<MudThemeProvider Theme="_theme" @bind-isDarkMode="@_isDarkMode" />
 <MudPopoverProvider />
 
 @* Needed for dialogs *@
@@ -10,26 +10,87 @@
 @* Needed for snackbars *@
 <MudSnackbarProvider />
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+<MudLayout>
+    <NavMenu DrawerIsOpen="@_drawerIsOpen" />
 
-    <main>
-        <MudAppBar Color="Color.Primary" Fixed="false">
-            <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" />
-            <MudSpacer />
-            <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" />
-        </MudAppBar>
+    <MudAppBar Elevation="1">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
+                       OnClick="@ToggleDrawer" />
+        <MudSpacer />
+        @{
+            if (_isDarkMode)
+            {
+                <MudIconButton OnClick="@ToggleDarkMode" Icon="@Icons.Material.Filled.LightMode" Color="Color.Inherit"
+                               Target="_blank" />
+            }
+            else
+            {
+                <MudIconButton OnClick="@ToggleDarkMode" Icon="@Icons.Material.Filled.DarkMode" Color="Color.Inherit"
+                               Target="_blank" />
+            }
+        }
+    </MudAppBar>
 
-        <article class="content px-4">
+    <MudMainContent>
+        <MudContainer Class="m-0 p-0">
             @Body
-        </article>
-    </main>
-</div>
+        </MudContainer>
+    </MudMainContent>
+
+</MudLayout>
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>
+
+@code {
+    private MudTheme _theme = new MudTheme()
+    {
+        Typography = new Typography()
+        {
+            Default = new DefaultTypography()
+            {
+                FontFamily = new[] { "Google Sans Flex", "Helvetica", "Arial", "sans-serif" }
+            }
+        },
+        PaletteLight = new PaletteLight()
+        {
+            Primary = Colors.DeepPurple.Default, // #673AB7
+            Secondary = Colors.Amber.Default, // Contrast color for buttons/actions
+            AppbarBackground = Colors.DeepPurple.Darken3,
+            AppbarText = Colors.Shades.White,
+            Background = "#ffffff", // Colors.Gray.Lighten5, // Very light grey background
+            Surface = Colors.Shades.White, // White cards/papers
+            DrawerBackground = Colors.Shades.White,
+            ActionDefault = Colors.Gray.Darken2,
+        },
+        PaletteDark = new PaletteDark()
+        {
+            Primary = Colors.DeepPurple.Lighten2, // #9575CD (Softer purple for dark)
+            Secondary = Colors.Amber.Lighten2,
+            Background = "#121212", // True dark background
+            Surface = "#1e1e2d", // Slightly lighter surface for cards
+            AppbarBackground = "#1a1a27",
+            AppbarText = Colors.Shades.White,
+            DrawerBackground = "#1a1a27",
+            ActionDefault = "#adadb1",
+            TextPrimary = Colors.Shades.White,
+            TextSecondary = "rgba(255,255,255, 0.70)"
+        }
+    };
+
+    private bool _drawerIsOpen = true;
+    static private bool _isDarkMode = false;
+
+    private void ToggleDrawer()
+    {
+        _drawerIsOpen = !_drawerIsOpen;
+    }
+
+    private void ToggleDarkMode()
+    {
+        _isDarkMode = !_isDarkMode;
+    }
+}

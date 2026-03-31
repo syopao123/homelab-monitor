@@ -1,0 +1,18 @@
+﻿<MudCard Style="width: 250px;" Class="pb-2" Elevation="0" Outlined="true">
+    <MudCardContent>
+        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+            <MudText Typo="Typo.h6">Storage</MudText>
+            <MudIcon Icon="@storageIcon" Title="Storage" Size="Size.Medium" Color="Color.Primary" />
+        </MudStack>
+        <MudDivider Class="my-3" Style="border-color: transparent;" />
+        <MudText Typo="Typo.h5">45%</MudText>
+        <MudProgressLinear Color="Color.Primary" Rounded="true" Size="Size.Small" Value="45" />
+    </MudCardContent>
+    <MudCardActions>
+        @* <MudButton Variant="Variant.Text" Color="Color.Primary">Learn more</MudButton> *@
+    </MudCardActions>
+</MudCard>
+
+@code {
+    const string storageIcon = """<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M120-160v-160h720v160H120Zm80-40h80v-80h-80v80Zm-80-440v-160h720v160H120Zm80-40h80v-80h-80v80Zm-80 280v-160h720v160H120Zm80-40h80v-80h-80v80Z"/></svg>""";
+}

@@ -1,0 +1,48 @@
+﻿@page "/"
+@using Web.Components.Custom.Dashboard
+
+<PageTitle>Dashboard</PageTitle>
+
+<MudPaper Class="p-5" Elevation="0" Style="background-color: transparent;">
+    <MudText Typo="Typo.h4">Dashboard</MudText>
+
+    <MudDivider DividerType="DividerType.Middle" Class="my-3 m-0" Light="true" Style="border-color: transparent;" />
+    @* Cards *@
+    <MudGrid Spacing="6" Justify="Justify.FlexStart">
+        <MudItem>
+            <CpuUsage />
+        </MudItem>
+        <MudItem>
+            <MemoryUsage />
+        </MudItem>
+        <MudItem>
+            <StorageUsage />
+        </MudItem>
+    </MudGrid>
+
+    <MudDivider Class="my-4" Style="border-color: transparent;" />
+
+    @* Virtual Machines & LXC Containers *@
+    <MudGrid Spacing="6" Justify="Justify.FlexStart" Class="d-flex flex-grow-1">
+        <MudItem Class="flex-grow-1">
+            <VirtualMachines />
+        </MudItem>
+        <MudItem Class="flex-grow-1">
+            <LxcContainers />
+        </MudItem>
+    </MudGrid>
+
+    <MudDivider Class="my-4" Style="border-color: transparent;" />
+
+    @* Node Information *@
+    <MudGrid Spacing="6" Justify="Justify.FlexStart" Class="d-flex flex-grow-1">
+        <MudItem Class="flex-grow-1">
+            <NodeInfo />
+        </MudItem>
+    </MudGrid>
+
+</MudPaper>
+
+@code {
+
+}
