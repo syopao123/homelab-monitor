@@ -1,0 +1,161 @@
+﻿@page "/compute"
+@using System.ComponentModel.DataAnnotations
+
+<PageTitle>Compute</PageTitle>
+
+<MudPaper Class="p-5" Elevation="0" Style="background-color: transparent;">
+    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+        <MudItem>
+            <MudText Typo="Typo.h5">Compute Resources</MudText>
+        </MudItem>
+        <MudItem>
+            <MudChipSet T="Color">
+                <MudChip T="string" Color="Color.Info">7 Running</MudChip>
+                <MudChip T="string" Color="Color.Surface">2 Stopped</MudChip>
+            </MudChipSet>
+        </MudItem>
+
+    </MudStack>
+
+    <MudDivider Class="my-1" Style="border-color: transparent;" />
+
+    <MudStack Row="false">
+        <MudItem>
+            <MudTextField @bind-Value="searchString" Placeholder="Search by name, type, or IP address..."
+                          Variant="Variant.Outlined" AdornmentIcon="@Icons.Material.Filled.Search" Adornment="Adornment.Start"
+                          Immediate="true">
+            </MudTextField>
+        </MudItem>
+        <MudItem>
+            <MudTable Class="rounded-4" Items="@resources" Breakpoint="Breakpoint.SmAndDown" Loading="@_loading"
+                      LoadingProgressColor="Color.Info" Filter="new Func<Resource,bool>(FilterFunc1)">
+                <HeaderContent>
+                    <MudTh>ID</MudTh>
+                    <MudTh>Type</MudTh>
+                    <MudTh>Name</MudTh>
+                    <MudTh>Status</MudTh>
+                    <MudTh>IP Address</MudTh>
+                    <MudTh>CPU</MudTh>
+                    <MudTh>Memory</MudTh>
+                    <MudTh>Actions</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>@context.id</MudTd>
+                    <MudTd>
+                        @if (context.type.Equals("VM"))
+                        {
+                            <MudChip T="string" Label="true" Color="Color.Primary" Variant="Variant.Outlined"
+                                     Size="Size.Small">VM</MudChip>
+                        }
+                        else if (context.type.Equals("LXC"))
+                        {
+                            <MudChip T="string" Label="true" Color="Color.Info" Variant="Variant.Outlined"
+                                     Size="Size.Small">LXC</MudChip>
+                        }
+                    </MudTd>
+                    <MudTd>@context.name</MudTd>
+                    <MudTd>
+                        @if (context.status)
+                        {
+                            <MudChip T="string" Color="Color.Success" Size="Size.Small">running</MudChip>
+                        }
+                        else
+                        {
+                            <MudChip T="string" Color="Color.Error" Size="Size.Small">stopped</MudChip>
+                        }
+                    </MudTd>
+                    <MudTd>@context.ipAddress</MudTd>
+                    <MudTd>@context.cpuCores</MudTd>
+                    <MudTd>@context.memory MB</MudTd>
+                    <MudTd>
+                        <MudIconButton Icon="@Icons.Material.Filled.Refresh" Size="Size.Small" />
+                    </MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager />
+                </PagerContent>
+            </MudTable>
+        </MudItem>
+    </MudStack>
+
+
+</MudPaper>
+
+@code {
+    private string searchString = "";
+    private bool _loading;
+
+    @* Temporary *@
+    public class Resource
+    {
+        public int id { get; set; }
+        public string type { get; set; } = "";
+        public string name { get; set; } = "";
+        public bool status { get; set; }
+        public string ipAddress { get; set; } = "";
+        public int cpuCores { get; set; }
+        public double memory { get; set; }
+    }
+
+    private List<Resource> resources = new List<Resource>
+{
+    // --- Data from Image ---
+    new Resource { id = 100, type = "VM", name = "ubuntu-server-01", status = true, ipAddress = "192.168.1.100", cpuCores =
+2, memory = 4096 },
+    new Resource { id = 101, type = "VM", name = "debian-web-server", status = true, ipAddress = "192.168.1.101", cpuCores =
+4, memory = 8192 },
+    new Resource { id = 102, type = "VM", name = "windows-dev", status = false, ipAddress = "192.168.1.102", cpuCores = 4,
+memory = 16384 },
+    new Resource { id = 103, type = "LXC", name = "docker-host", status = true, ipAddress = "192.168.1.103", cpuCores = 4,
+memory = 8192 },
+    new Resource { id = 104, type = "LXC", name = "nginx-proxy", status = true, ipAddress = "192.168.1.104", cpuCores = 2,
+memory = 2048 },
+    new Resource { id = 105, type = "LXC", name = "database-server", status = true, ipAddress = "192.168.1.105", cpuCores =
+2, memory = 4096 },
+    new Resource { id = 106, type = "VM", name = "fedora-workstation", status = true, ipAddress = "192.168.1.106", cpuCores
+= 2, memory = 8192 },
+    new Resource { id = 107, type = "LXC", name = "monitoring-stack", status = true, ipAddress = "192.168.1.107", cpuCores =
+2, memory = 4096 },
+    new Resource { id = 108, type = "LXC", name = "backup-service", status = false, ipAddress = "192.168.1.108", cpuCores =
+1, memory = 2048 },
+
+    // --- Generated Additional Data ---
+    new Resource { id = 109, type = "VM", name = "k8s-master-01", status = true, ipAddress = "192.168.1.109", cpuCores = 4,
+memory = 8192 },
+    new Resource { id = 110, type = "VM", name = "k8s-worker-01", status = true, ipAddress = "192.168.1.110", cpuCores = 8,
+memory = 16384 },
+    new Resource { id = 111, type = "VM", name = "k8s-worker-02", status = true, ipAddress = "192.168.1.111", cpuCores = 8,
+memory = 16384 },
+    new Resource { id = 112, type = "LXC", name = "redis-cache", status = true, ipAddress = "192.168.1.112", cpuCores = 1,
+memory = 1024 },
+    new Resource { id = 113, type = "VM", name = "win-server-sql", status = false, ipAddress = "192.168.1.113", cpuCores =
+6, memory = 32768 },
+    new Resource { id = 114, type = "LXC", name = "gitlab-runner", status = true, ipAddress = "192.168.1.114", cpuCores = 4,
+memory = 4096 },
+    new Resource { id = 115, type = "LXC", name = "mqtt-broker", status = true, ipAddress = "192.168.1.115", cpuCores = 1,
+memory = 512 },
+    new Resource { id = 116, type = "VM", name = "arch-testing-01", status = false, ipAddress = "192.168.1.116", cpuCores =
+2, memory = 4096 },
+    new Resource { id = 117, type = "LXC", name = "vpn-gateway", status = true, ipAddress = "192.168.1.117", cpuCores = 1,
+memory = 1024 },
+    new Resource { id = 118, type = "VM", name = "media-server-plex", status = true, ipAddress = "192.168.1.118", cpuCores =
+4, memory = 12288 }
+};
+
+    private bool FilterFunc1(Resource resource) => FilterFunc(resource, searchString);
+    private bool FilterFunc(Resource resource, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (resource.type.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (resource.name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (resource.ipAddress.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if ($"{resource.type} {resource.name} {resource.ipAddress}".Contains(searchString))
+            return true;
+        return false;
+    }
+
+}

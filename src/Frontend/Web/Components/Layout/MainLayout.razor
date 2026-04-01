@@ -11,32 +11,53 @@
 <MudSnackbarProvider />
 
 <MudLayout>
-    <NavMenu DrawerIsOpen="@_drawerIsOpen" />
-
-    <MudAppBar Elevation="1">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
-                       OnClick="@ToggleDrawer" />
-        <MudSpacer />
-        @{
-            if (_isDarkMode)
+    <MudDrawer @bind-Open="@_isDrawerOpen" Fixed="true" Elevation="1" Variant="@DrawerVariant.Mini"
+               OpenMiniOnHover="false" Breakpoint="Breakpoint.None">
+        <MudNavMenu>
+            @if (_isDrawerOpen)
             {
-                <MudIconButton OnClick="@ToggleDarkMode" Icon="@Icons.Material.Filled.LightMode" Color="Color.Inherit"
-                               Target="_blank" />
+                <MudNavLink Icon="@Icons.Material.Filled.KeyboardDoubleArrowLeft" OnClick="ToggleDrawer">
+                </MudNavLink>
             }
             else
             {
-                <MudIconButton OnClick="@ToggleDarkMode" Icon="@Icons.Material.Filled.DarkMode" Color="Color.Inherit"
-                               Target="_blank" />
+                <MudNavLink Icon="@Icons.Material.Filled.KeyboardDoubleArrowRight" OnClick="ToggleDrawer">
+                </MudNavLink>
             }
+        </MudNavMenu>
+
+        <NavMenu />
+
+        <MudSpacer />
+
+        @if (_isDrawerOpen)
+        {
+            <MudStack Class="m-4" Row="true" AlignItems="AlignItems.Center">
+                <MudPaper Elevation="0" Style="background-color: transparent;">
+                    <MudIcon Icon="@Icons.Material.Filled.Person" Size="Size.Large" />
+                </MudPaper>
+                <MudPaper Elevation="0" Style="background-color: transparent;">
+                    <MudStack Row="false" Spacing="0">
+                        <MudPaper Elevation="0" Style="background-color: transparent;">
+                            <MudText Typo="Typo.body1">Admin</MudText>
+                        </MudPaper>
+                        <MudPaper Elevation="0" Style="background-color: transparent;">
+                            <MudText Typo="Typo.body2">admin@homelab</MudText>
+                        </MudPaper>
+                    </MudStack>
+                </MudPaper>
+            </MudStack>
         }
-    </MudAppBar>
-
-    <MudMainContent>
-        <MudContainer Class="m-0 p-0">
-            @Body
-        </MudContainer>
+        else
+        {
+            <MudNavMenu>
+                <MudNavLink Icon="@Icons.Material.Filled.Person" OnClick="ToggleDrawer"></MudNavLink>
+            </MudNavMenu>
+        }
+    </MudDrawer>
+    <MudMainContent Class="pa-6">
+        @Body
     </MudMainContent>
-
 </MudLayout>
 
 <div id="blazor-error-ui" data-nosnippet>
@@ -81,12 +102,13 @@
         }
     };
 
-    private bool _drawerIsOpen = true;
-    static private bool _isDarkMode = false;
+    private bool _isDrawerOpen = true;
+
+    private bool _isDarkMode = false;
 
     private void ToggleDrawer()
     {
-        _drawerIsOpen = !_drawerIsOpen;
+        _isDrawerOpen = !_isDrawerOpen;
     }
 
     private void ToggleDarkMode()

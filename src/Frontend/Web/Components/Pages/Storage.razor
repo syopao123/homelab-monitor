@@ -1,0 +1,24 @@
+﻿@page "/storage"
+@using Web.Components.Custom.Storage
+
+
+<PageTitle>Storage</PageTitle>
+
+<MudPaper Class="p-5" Elevation="0" Style="background-color: transparent;">
+    <MudText Typo="Typo.h5">Storage Pools</MudText>
+    <MudDivider Class="my-2" Style="border-color: transparent;" />
+
+    @* Storage Pools *@
+    <StoragePools />
+
+    <MudDivider Class="my-4" Style="border-color: transparent;" />
+
+    @* Storage Overview *@
+    <StorageOverview />
+
+    <MudDivider Class="my-4" Style="border-color: transparent;" />
+
+    @* Storage Health *@
+    <StorageHealth />
+
+</MudPaper>

@@ -13,5 +13,6 @@
   <ItemGroup>
     <Folder Include="Components/Custom/" />
     <Folder Include="Components/Custom/Dashboard/" />
+    <Folder Include="Components/Custom/Storage/" />
   </ItemGroup>
 </Project>
