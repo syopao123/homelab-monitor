@@ -1,3 +1,126 @@
 ﻿@page "/activity-log"
 
 <PageTitle>Activity Log</PageTitle>
+
+<MudPaper Class="p-5" Elevation="0" Style="background-color: transparent;">
+    <MudText Typo="Typo.h5">Activity Log</MudText>
+    <MudDivider Class="my-2" Style="border-color: transparent;" />
+
+    <MudStack Row="true" Justify="Justify.FlexStart" AlignItems="AlignItems.Start">
+        <MudCard Class="p-3 rounded-4" Style="min-width: 250px;" Elevation="0" Outlined="true">
+            <MudStack Row="true" AlignItems="AlignItems.Center">
+                <MudPaper Elevation="0" Style="background-color: transparent">
+                    <MudIcon Icon="@Icons.Material.Outlined.CheckCircle" Color="Color.Success" Size="Size.Large" />
+                </MudPaper>
+                <MudPaper Elevation="0" Style="background-color: transparent">
+                    <MudText Typo="Typo.h6">13</MudText>
+                    <MudText Class="fw-light" Style="color: gray;">Successful</MudText>
+                </MudPaper>
+            </MudStack>
+        </MudCard>
+        <MudCard Class="p-3 rounded-4" Style="min-width: 250px;" Elevation="0" Outlined="true">
+            <MudStack Row="true" AlignItems="AlignItems.Center">
+                <MudPaper Elevation="0" Style="background-color: transparent">
+                    <MudIcon Icon="@Icons.Material.Outlined.WarningAmber" Color="Color.Warning" Size="Size.Large" />
+                </MudPaper>
+                <MudPaper Elevation="0" Style="background-color: transparent">
+                    <MudText Typo="Typo.h6">1</MudText>
+                    <MudText Class="fw-light" Style="color: gray;">Warnings</MudText>
+                </MudPaper>
+            </MudStack>
+        </MudCard>
+        <MudCard Class="p-3 rounded-4" Style="min-width: 250px;" Elevation="0" Outlined="true">
+            <MudStack Row="true" AlignItems="AlignItems.Center">
+                <MudPaper Elevation="0" Style="background-color: transparent">
+                    <MudIcon Icon="@Icons.Material.Outlined.ErrorOutline" Color="Color.Error" Size="Size.Large" />
+                </MudPaper>
+                <MudPaper Elevation="0" Style="background-color: transparent">
+                    <MudText Typo="Typo.h6">1</MudText>
+                    <MudText Class="fw-light" Style="color: gray;">Errors</MudText>
+                </MudPaper>
+            </MudStack>
+        </MudCard>
+    </MudStack>
+    <MudDivider Class="my-3" Style="border-color: transparent;" />
+
+
+    <MudTable Class="rounded-4" Items="@_activityLogs" Hover="true" Breakpoint="Breakpoint.Sm">
+        <HeaderContent>
+            <MudTh>Timestamp</MudTh>
+            <MudTh>Action</MudTh>
+            <MudTh>User</MudTh>
+            <MudTh>Status</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Nr">@context.Timestamp</MudTd>
+            <MudTd DataLabel="Sign">@context.Action</MudTd>
+            <MudTd DataLabel="Name">@context.User</MudTd>
+            <MudTd DataLabel="Molar mass">
+                @if (@context.Status == ActivityLogStatus.Success)
+                {
+                    <MudChip T="string" Variant="Variant.Filled" Color="Color.Success">Running</MudChip>
+                }
+                else if (@context.Status == ActivityLogStatus.Warning)
+                {
+                    <MudChip T="string" Variant="Variant.Filled" Color="Color.Warning">Warning</MudChip>
+                }
+                else if (@context.Status == ActivityLogStatus.Error)
+                {
+                    <MudChip T="string" Variant="Variant.Filled" Color="Color.Error">Error</MudChip>
+                }
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+
+</MudPaper>
+
+@code {
+    public class ActivityLogElement
+    {
+        public string Timestamp { get; set; } = "";
+        public string Action { get; set; } = "";
+        public string User { get; set; } = "";
+        public ActivityLogStatus Status { get; set; } = 0;
+    }
+
+    public enum ActivityLogStatus
+    {
+        Success, Warning, Error
+    }
+
+    private List<ActivityLogElement> _activityLogs = new List<ActivityLogElement> {
+    new ActivityLogElement { Timestamp = "2026-03-29 14:23:45", Action = "VM 101 Started", User = "admin", Status =
+ActivityLogStatus.Success },
+    new ActivityLogElement { Timestamp = "2026-03-29 14:15:30", Action = "LXC 103 Stopped", User = "admin", Status =
+ActivityLogStatus.Success },
+    new ActivityLogElement { Timestamp = "2026-03-29 13:45:12", Action = "VM 102 Backup Completed", User = "system", Status
+= ActivityLogStatus.Success },
+    new ActivityLogElement { Timestamp = "2026-03-29 13:20:05", Action = "Storage zfs-pool Expanded", User = "admin", Status
+= ActivityLogStatus.Success },
+    new ActivityLogElement { Timestamp = "2026-03-29 12:55:33", Action = "LXC 104 Restarted", User = "admin", Status =
+ActivityLogStatus.Success },
+    new ActivityLogElement { Timestamp = "2026-03-29 12:30:18", Action = "VM 100 Snapshot Created", User = "admin", Status =
+ActivityLogStatus.Success },
+    new ActivityLogElement { Timestamp = "2026-03-29 11:45:27", Action = "LXC 105 Backup Failed", User = "system", Status =
+ActivityLogStatus.Error },
+    new ActivityLogElement { Timestamp = "2026-03-29 11:20:09", Action = "VM 106 Started", User = "admin", Status =
+ActivityLogStatus.Success },
+    new ActivityLogElement { Timestamp = "2026-03-29 10:55:44", Action = "Network Configuration Updated", User = "admin",
+Status = ActivityLogStatus.Success },
+    new ActivityLogElement { Timestamp = "2026-03-29 10:30:22", Action = "LXC 107 Created", User = "admin", Status =
+ActivityLogStatus.Success },
+    new ActivityLogElement { Timestamp = "2026-03-29 10:05:16", Action = "VM 101 Memory Increased", User = "admin", Status =
+ActivityLogStatus.Success },
+    new ActivityLogElement { Timestamp = "2026-03-29 09:40:55", Action = "Storage local-lvm Threshold Warning", User =
+"system", Status = ActivityLogStatus.Warning },
+    new ActivityLogElement { Timestamp = "2026-03-29 09:15:38", Action = "VM 102 Stopped", User = "admin", Status =
+ActivityLogStatus.Success },
+    new ActivityLogElement { Timestamp = "2026-03-29 08:50:21", Action = "Backup Job Completed", User = "system", Status =
+ActivityLogStatus.Success },
+    new ActivityLogElement { Timestamp = "2026-03-29 08:25:07", Action = "LXC 103 Started", User = "admin", Status =
+ActivityLogStatus.Success }
+    };
+}

@@ -1,11 +1,15 @@
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using MudBlazor.Services;
 using Web.Components;
+using Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 builder.Services.AddMudServices();
+builder.Services.AddScoped<LayoutState>(); // For toggling dark mode
+builder.Services.AddScoped<ProtectedLocalStorage>(); // For storing app's UI settings
 
 var app = builder.Build();
 

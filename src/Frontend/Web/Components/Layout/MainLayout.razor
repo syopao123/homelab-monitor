@@ -1,7 +1,10 @@
-﻿@inherits LayoutComponentBase
+﻿@using Web.Services
+@inherits LayoutComponentBase
+@inject LayoutState LayoutState
+@implements IDisposable
 
 @* Required *@
-<MudThemeProvider Theme="_theme" @bind-isDarkMode="@_isDarkMode" />
+<MudThemeProvider Theme="_theme" IsDarkMode="@LayoutState.IsDarkMode" />
 <MudPopoverProvider />
 
 @* Needed for dialogs *@
@@ -48,12 +51,6 @@
                 </MudPaper>
             </MudStack>
         }
-        else
-        {
-            <MudNavMenu>
-                <MudNavLink Icon="@Icons.Material.Filled.Person" OnClick="ToggleDrawer"></MudNavLink>
-            </MudNavMenu>
-        }
     </MudDrawer>
     <MudMainContent Class="pa-6">
         @Body
@@ -82,7 +79,7 @@
             Secondary = Colors.Amber.Default, // Contrast color for buttons/actions
             AppbarBackground = Colors.DeepPurple.Darken3,
             AppbarText = Colors.Shades.White,
-            Background = "#ffffff", // Colors.Gray.Lighten5, // Very light grey background
+            Background = "#fafafa", // Colors.Gray.Lighten5, // Very light grey background
             Surface = Colors.Shades.White, // White cards/papers
             DrawerBackground = Colors.Shades.White,
             ActionDefault = Colors.Gray.Darken2,
@@ -104,15 +101,23 @@
 
     private bool _isDrawerOpen = true;
 
-    private bool _isDarkMode = false;
+    protected override void OnInitialized() {
+        LayoutState.OnChange += StateHasChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+        if (firstRender) {
+            await LayoutState.LoadStateAsync();
+            StateHasChanged();
+        }
+    }
 
     private void ToggleDrawer()
     {
         _isDrawerOpen = !_isDrawerOpen;
     }
 
-    private void ToggleDarkMode()
-    {
-        _isDarkMode = !_isDarkMode;
+    public void Dispose() {
+        LayoutState.OnChange -= StateHasChanged;
     }
 }

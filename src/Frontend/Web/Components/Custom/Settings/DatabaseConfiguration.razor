@@ -1,0 +1,15 @@
+﻿<MudCard Class="p-4 pt-5 rounded-4" Style="min-width: 500px; max-width: 50%;" Elevation="0" Outlined="true">
+    <MudText Typo="Typo.h6">Database Configuration</MudText>
+    <MudDivider Class="py-3" Style="border-color: transparent;" />
+
+    <MudStack Row="false" Style="max-width: 50%;">
+        <MudText>Connection String</MudText>
+        <MudTextField @bind-Value="connectionString" Underline="true" InputType="InputType.Password"></MudTextField>
+        <MudText Class="" Typo="Typo.body1" Style="color: gray;">Connection string for activity log storage</MudText>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Style="width: fit-content;">Test Database Connection</MudButton>
+    </MudStack>
+</MudCard>
+
+@code {
+    public string connectionString = "Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;";
+}

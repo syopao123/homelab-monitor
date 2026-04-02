@@ -1,0 +1,61 @@
+﻿@using MudBlazor.State
+@using Web.Services
+@inject LayoutState LayoutState
+
+<MudCard Class="p-4 pt-5 rounded-4" Style="min-width: 500px; max-width: 50%;" Elevation="0" Outlined="true">
+    <MudText Typo="Typo.h6">Application Settings</MudText>
+    <MudDivider Class="py-3" Style="border-color: transparent;" />
+
+    <MudStack Row="false" AlignItems="AlignItems.Start" Style="max-width: 100%;">
+        <MudText Typo="Typo.body1">Refresh Interval</MudText>
+        <MudSelect @bind-Value="refreshInterval" Variant="Variant.Outlined" FitContent="true" FullWidth="true">
+            @foreach (var interval in refreshIntervals)
+            {
+                <MudSelectItem Value="@interval">
+                    @if (interval >= 60)
+                    {
+                        var min = interval / 60;
+                        @min
+                        <span> minute</span><span>@(min > 1 ?@<span>s</span> : @<span></span>)</span>
+                    }
+                    else
+                    {
+                        @interval
+                        <span> seconds</span>
+                    }
+                </MudSelectItem>
+            }
+        </MudSelect>
+        <MudText Typo="Typo.body1" Style="color: gray;">How often to refresh data from the Proxmox API</MudText>
+    </MudStack>
+
+    <MudDivider Class="py-4" Style="border-color: transparent;" />
+
+    <MudStack Row="false">
+        <MudStack Row="true" AlignItems="AlignItems.Center">
+            <MudText>Enable Notifications</MudText>
+            <MudSwitch @bind-Value="enableNotifications" Variant="Variant.Outlined" Color="Color.Primary" />
+        </MudStack>
+        <MudText Typo="Typo.body1" Style="color: gray;">Receive alerts for important events</MudText>
+    </MudStack>
+
+    <MudDivider Style="border-top: 1px solid black;" Class="mt-3 mb-6" />
+
+    <MudStack Row="false">
+        <MudStack Row="true" AlignItems="AlignItems.Center">
+            <MudText>Enable Dark Mode</MudText>
+            <MudSwitch T="bool" Value="LayoutState.IsDarkMode" ValueChanged="LayoutState.ToggleTheme" Color="Color.Primary" />
+        </MudStack>
+        <MudText Typo="Typo.body1" Style="color: gray;">Toggle between light and dark theme</MudText>
+    </MudStack>
+
+
+</MudCard>
+
+@code {
+    private int refreshInterval = 10;
+    private int selectedInterval = 10;
+    private readonly int[] refreshIntervals = { 10, 30, 60, 300 }; // Seconds
+    private bool enableNotifications;
+
+}
