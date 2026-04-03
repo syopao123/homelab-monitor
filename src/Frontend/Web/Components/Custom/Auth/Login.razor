@@ -1,0 +1,37 @@
+﻿@page "/login"
+
+<PageTitle>Login</PageTitle>
+
+<div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <MudPaper Class="p-5 rounded-3">
+        <MudForm @ref="_form" @bind-IsValid="@_success" @bind-Errors="@_errors">
+            <MudTextField T="string" @bind-Value="username" Label="Username" Variant="Variant.Text" 
+                Required="true" RequiredError="Username is required"></MudTextField>
+            <MudTextField T="string" @bind-Value="password" Label="Password" Variant="Variant.Text" 
+                Required="true" RequiredError="Password is required"></MudTextField>
+
+            <MudDivider Class="py-4" />
+
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" Size="Size.Medium" OnClick="LoginUser">
+                Login
+            </MudButton>
+        </MudForm>
+    </MudPaper>
+
+</div>
+
+@code {
+    private MudForm? _form;
+    private bool _success;
+    private string[]? _errors;
+    private string username = "";
+    private string password = "";
+
+
+    private void LoginUser() {
+        if (!_form!.IsValid) {
+            _form!.ValidateAsync();
+            return;
+        }
+    }
+}

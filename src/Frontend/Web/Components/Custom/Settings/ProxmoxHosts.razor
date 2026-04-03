@@ -1,13 +1,14 @@
-﻿<MudCard Class="p-4 pt-5 rounded-4" Style="min-width: 500px; max-width: 50%;" Elevation="0" Outlined="true">
+﻿@inject IDialogService DialogService
+
+<MudCard Class="p-4 pt-5 rounded-4" Style="min-width: 500px; max-width: 50%;" Elevation="0" Outlined="true">
     <MudStack Row="true" Justify="Justify.SpaceBetween">
         <div>
             <MudText Typo="Typo.h6">Proxmox Hosts</MudText>
         </div>
         <div>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary"
-                       Class="d-flex justify-content-between align-items-center rounded-2">
-                <MudIcon Icon="@Icons.Material.Filled.Add" Size="Size.Small" />
-                Add Host
+            <MudButton @onclick="OpenDialogAsync" Variant="Variant.Filled" Color="Color.Primary">
+                <MudIcon Icon="@Icons.Material.Outlined.Add" Size="Size.Medium"/>
+                <span>Add Host</span>
             </MudButton>
         </div>
     </MudStack>
@@ -37,12 +38,12 @@
                     <div class="gap-1 d-flex align-items-center" style="width: 100%;">
                         @if (proxmoxShowToken[host.Id])
                         {
-                            <MudTextField @bind-Value="@host.ApiToken"
-                                          Underline="false" InputType="InputType.Text" Disabled="true" />
+                            <MudTextField @bind-Value="@host.ApiToken" Underline="false" InputType="InputType.Text"
+                                          Disabled="true" />
                         }
                         else
                         {
-                            <MudField Typo="Typo.body2" Style="color: darkgray;" Underline="false" >•••••••••••••••</MudField>
+                            <MudField Typo="Typo.body2" Style="color: darkgray;" Underline="false">•••••••••••••••</MudField>
                         }
                         <MudIconButton Icon="@Icons.Material.Outlined.RemoveRedEye" Size="Size.Medium"
                                        OnClick="@(() => ToggleTokenVisibility(@host.Id))" />
@@ -50,7 +51,6 @@
                 </MudStack>
             </MudCard>
         }
-
     </MudStack>
 
     
@@ -99,5 +99,17 @@
     private void ToggleTokenVisibility(int id)
     {
         proxmoxShowToken[id] = !proxmoxShowToken[id];
+    }
+
+    private Task OpenDialogAsync()
+    {
+        var options = new DialogOptions {
+            CloseOnEscapeKey = true,
+            BackdropClick = false,
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true
+        };
+
+        return DialogService.ShowAsync<AddProxmoxHost>("Simple Dialog", options);
     }
 }

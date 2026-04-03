@@ -1,4 +1,5 @@
-﻿@using Web.Services
+﻿@using Web.Components.Custom.Auth
+@using Web.Services
 @inherits LayoutComponentBase
 @inject LayoutState LayoutState
 @implements IDisposable
@@ -14,46 +15,56 @@
 <MudSnackbarProvider />
 
 <MudLayout>
-    <MudDrawer @bind-Open="@_isDrawerOpen" Fixed="true" Elevation="1" Variant="@DrawerVariant.Mini"
-               OpenMiniOnHover="false" Breakpoint="Breakpoint.None">
-        <MudNavMenu>
+    @if (_isLoggedIn)
+    {
+        <MudDrawer @bind-Open="@_isDrawerOpen" Fixed="true" Elevation="1" Variant="@DrawerVariant.Mini"
+                   OpenMiniOnHover="false" Breakpoint="Breakpoint.None">
+            <MudNavMenu>
+                @if (_isDrawerOpen)
+                {
+                    <MudNavLink Icon="@Icons.Material.Filled.KeyboardDoubleArrowLeft" OnClick="ToggleDrawer">
+                    </MudNavLink>
+                }
+                else
+                {
+                    <MudNavLink Icon="@Icons.Material.Filled.KeyboardDoubleArrowRight" OnClick="ToggleDrawer">
+                    </MudNavLink>
+                }
+            </MudNavMenu>
+
+            <NavMenu />
+
+            <MudSpacer />
+
             @if (_isDrawerOpen)
             {
-                <MudNavLink Icon="@Icons.Material.Filled.KeyboardDoubleArrowLeft" OnClick="ToggleDrawer">
-                </MudNavLink>
+                <MudStack Class="m-4" Row="true" AlignItems="AlignItems.Center">
+                    <MudPaper Elevation="0" Style="background-color: transparent;">
+                        <MudIcon Icon="@Icons.Material.Filled.Person" Size="Size.Large" />
+                    </MudPaper>
+                    <MudPaper Elevation="0" Style="background-color: transparent;">
+                        <MudStack Row="false" Spacing="0">
+                            <MudPaper Elevation="0" Style="background-color: transparent;">
+                                <MudText Typo="Typo.body1">Admin</MudText>
+                            </MudPaper>
+                            <MudPaper Elevation="0" Style="background-color: transparent;">
+                                <MudText Typo="Typo.body2">admin@homelab</MudText>
+                            </MudPaper>
+                        </MudStack>
+                    </MudPaper>
+                </MudStack>
             }
-            else
-            {
-                <MudNavLink Icon="@Icons.Material.Filled.KeyboardDoubleArrowRight" OnClick="ToggleDrawer">
-                </MudNavLink>
-            }
-        </MudNavMenu>
-
-        <NavMenu />
-
-        <MudSpacer />
-
-        @if (_isDrawerOpen)
-        {
-            <MudStack Class="m-4" Row="true" AlignItems="AlignItems.Center">
-                <MudPaper Elevation="0" Style="background-color: transparent;">
-                    <MudIcon Icon="@Icons.Material.Filled.Person" Size="Size.Large" />
-                </MudPaper>
-                <MudPaper Elevation="0" Style="background-color: transparent;">
-                    <MudStack Row="false" Spacing="0">
-                        <MudPaper Elevation="0" Style="background-color: transparent;">
-                            <MudText Typo="Typo.body1">Admin</MudText>
-                        </MudPaper>
-                        <MudPaper Elevation="0" Style="background-color: transparent;">
-                            <MudText Typo="Typo.body2">admin@homelab</MudText>
-                        </MudPaper>
-                    </MudStack>
-                </MudPaper>
-            </MudStack>
-        }
-    </MudDrawer>
+        </MudDrawer>
+    }
     <MudMainContent Class="pa-6">
-        @Body
+        @if (_isLoggedIn)
+        {
+            @Body
+        }
+        else
+        {
+            <Login />
+        }
     </MudMainContent>
 </MudLayout>
 
@@ -64,6 +75,9 @@
 </div>
 
 @code {
+    @* Temporary *@
+    public bool _isLoggedIn = true;
+
     private MudTheme _theme = new MudTheme()
     {
         Typography = new Typography()
@@ -101,12 +115,15 @@
 
     private bool _isDrawerOpen = true;
 
-    protected override void OnInitialized() {
+    protected override void OnInitialized()
+    {
         LayoutState.OnChange += StateHasChanged;
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender) {
-        if (firstRender) {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
             await LayoutState.LoadStateAsync();
             StateHasChanged();
         }
@@ -117,7 +134,8 @@
         _isDrawerOpen = !_isDrawerOpen;
     }
 
-    public void Dispose() {
+    public void Dispose()
+    {
         LayoutState.OnChange -= StateHasChanged;
     }
 }

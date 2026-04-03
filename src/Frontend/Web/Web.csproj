@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <Folder Include="Components/Custom/" />
+    <Folder Include="Components/Custom/Auth/" />
     <Folder Include="Components/Custom/Dashboard/" />
     <Folder Include="Components/Custom/Settings/" />
     <Folder Include="Components/Custom/Storage/" />

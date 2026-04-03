@@ -1,4 +1,7 @@
-﻿<MudNavMenu>
+﻿@using Web.Components.Custom.Auth
+@inject IDialogService DialogService
+
+<MudNavMenu>
     <MudNavLink Icon="@Icons.Material.Filled.Dashboard" Href="/" Match="NavLinkMatch.All">Dashboard
     </MudNavLink>
     <MudNavLink Icon="@Icons.Material.Filled.Computer" Href="/compute" Match="NavLinkMatch.All">Compute
@@ -10,4 +13,15 @@
     </MudNavLink>
     <MudNavLink Icon="@Icons.Material.Filled.Settings" Href="/settings" Match="NavLinkMatch.All">Settings
     </MudNavLink>
+    <MudNavLink Icon="@Icons.Material.Filled.Logout" Match="NavLinkMatch.All" OnClick="OpenDialogAsync">Logout
+    </MudNavLink>
 </MudNavMenu>
+
+@code {
+    private Task OpenDialogAsync()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
+
+        return DialogService.ShowAsync<LogoutDialog>("Logout", options);
+    }
+}

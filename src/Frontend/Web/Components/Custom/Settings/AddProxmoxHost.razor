@@ -1,0 +1,55 @@
+﻿@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+
+<MudDialog Class="rounded-3">
+    <TitleContent>
+        <MudText Typo="Typo.h6">Add Proxmox Host</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm>
+            <MudForm @ref="_form" @bind-IsValid="@_success" @bind-Errors="@_errors">
+
+                <MudTextField T="string" Label="Host Name" Required="true" RequiredError="Host name is required"
+                              Placeholder="e.g., Main Server, Backup Server" />
+                        
+                <MudDivider Class="py-2" Style="border-color: transparent;" />
+
+                <MudTextField T="string" Label="API URL" Required="true" RequiredError="API URL is required"
+                              Placeholder="https://10.10.0.1:8006/api2/json" />
+
+                <MudDivider Class="py-2" Style="border-color: transparent;" />
+
+                <MudTextField T="string" Label="API Token" Required="true" RequiredError="Password is required!"
+                              Placeholder="PVEAPIToken=user@pam!token=. . ."
+                              HelperText="Generate an API token in Proxmox VE under Datacenter > Permissions > API Tokens"
+                              InputType="InputType.Text" MaxLines="10" />
+            </MudForm>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Add Host</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
+
+    @* Form *@
+    private bool _success;
+    private MudForm _form;
+    private string[] _errors = [];
+
+    private void Submit()
+    {
+        if (!_form.IsValid)
+        {
+            _form.ValidateAsync();
+            return;
+        }
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+}
