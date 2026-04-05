@@ -18,4 +18,8 @@
     <Folder Include="Components/Custom/Storage/" />
     <Folder Include="Services/" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Shared\Shared.csproj" />
+  </ItemGroup>
 </Project>
