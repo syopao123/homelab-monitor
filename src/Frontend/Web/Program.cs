@@ -11,6 +11,11 @@ builder.Services.AddMudServices();
 builder.Services.AddScoped<LayoutState>(); // For toggling dark mode
 builder.Services.AddScoped<ProtectedLocalStorage>(); // For storing app's UI settings
 
+builder.Services.AddHttpClient<IHostService, HostService>(client =>
+{
+    client.BaseAddress = new Uri("http://localhost:5088/");
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

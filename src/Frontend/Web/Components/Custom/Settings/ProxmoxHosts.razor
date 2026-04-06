@@ -1,4 +1,7 @@
-﻿@inject IDialogService DialogService
+﻿@using Shared.Dtos
+@using Web.Services
+@inject IDialogService DialogService
+@inject IHostService _hostService
 
 <MudCard Class="p-4 pt-5 rounded-4" Style="min-width: 500px; max-width: 50%;" Elevation="0" Outlined="true">
     <MudStack Row="true" Justify="Justify.SpaceBetween">
@@ -7,7 +10,7 @@
         </div>
         <div>
             <MudButton @onclick="OpenDialogAsync" Variant="Variant.Filled" Color="Color.Primary">
-                <MudIcon Icon="@Icons.Material.Outlined.Add" Size="Size.Medium"/>
+                <MudIcon Icon="@Icons.Material.Outlined.Add" Size="Size.Medium" />
                 <span>Add Host</span>
             </MudButton>
         </div>
@@ -29,81 +32,54 @@
 
                 <MudStack Row="true" Justify="Justify.FlexStart" AlignItems="AlignItems.Center">
                     <MudIcon Icon="@Icons.Material.Outlined.Public" Size="Size.Small" />
-                    <MudText Typo="Typo.body2" Class="fw-light" Style="color: #6d6d6d;">@host.ApiUrl
+                    <MudText Typo="Typo.body2" Class="fw-light" Style="color: #6d6d6d;">@host.ServerUrl
                     </MudText>
                 </MudStack>
                 <MudDivider Class="py-1" Style="border-color: transparent;" />
                 <MudStack Row="true" Justify="Justify.FlexStart" AlignItems="AlignItems.Center">
                     <MudIcon Icon="@Icons.Material.Outlined.Key" Size="Size.Small" />
                     <div class="gap-1 d-flex align-items-center" style="width: 100%;">
-                        @if (proxmoxShowToken[host.Id])
+                        @if (proxmoxShowToken[@host.Id])
                         {
-                            <MudTextField @bind-Value="@host.ApiToken" Underline="false" InputType="InputType.Text"
+                            <MudTextField @bind-Value="host.ApiToken" Underline="false" InputType="InputType.Text"
                                           Disabled="true" />
-                        }
-                        else
-                        {
-                            <MudField Typo="Typo.body2" Style="color: darkgray;" Underline="false">•••••••••••••••</MudField>
+                        } else {
+                            <MudField Typo="Typo.body2" Style="color: darkgray;" Underline="false">•••••••••••••••</MudField>   
                         }
                         <MudIconButton Icon="@Icons.Material.Outlined.RemoveRedEye" Size="Size.Medium"
                                        OnClick="@(() => ToggleTokenVisibility(@host.Id))" />
+
                     </div>
                 </MudStack>
             </MudCard>
         }
     </MudStack>
-
-    
-
 </MudCard>
 
 @code {
-    public class ProxmoxHost
-    {
-        public int Id { get; set; }
-        public string HostName { get; set; } = "";
-        public string ApiUrl { get; set; } = "";
-        public string ApiToken { get; set; } = "";
-        public bool IsActive { get; set; } = false;
-    }
-    @* Temporary Data *@
-    private List<ProxmoxHost> proxmoxHosts = new()
-{
-    new ProxmoxHost
-    {
-        Id = 1,
-        HostName = "Main Proxmox Server",
-        ApiUrl = "https://192.168.1.10:8006/api2/json",
-        ApiToken = "PVEAPIToken=user@pam!token=*********",
-        IsActive = true
-    },
-    new ProxmoxHost
-    {
-        Id = 2,
-        HostName = "Backup Server",
-        ApiUrl = "https://192.168.1.20:8006/api2/json",
-        ApiToken = "PVEAPIToken=user@pam!token=*********",
-        IsActive = false
-    }
-};
+    private Dictionary<Guid, bool> proxmoxShowToken = new();
+    private List<ProxmoxHostDto> proxmoxHosts = new();
 
-    private Dictionary<int, bool> proxmoxShowToken = new();
     protected override async Task OnInitializedAsync()
     {
-        foreach (var host in proxmoxHosts)
-        {
-            proxmoxShowToken.Add(host.Id, false);
+        var results = await _hostService.GetHostsAsync();
+        if (results != null) {
+            proxmoxHosts = results;
+            proxmoxShowToken = proxmoxHosts.ToDictionary(h => h.Id, h => false);
         }
     }
 
-    private void ToggleTokenVisibility(int id)
+    private void ToggleTokenVisibility(Guid id)
     {
-        proxmoxShowToken[id] = !proxmoxShowToken[id];
+        if (proxmoxShowToken.ContainsKey(id)) {
+            proxmoxShowToken[id] = !proxmoxShowToken[id];
+        }
     }
 
     private Task OpenDialogAsync()
     {
-        var options = new DialogOptions {
+        var options = new DialogOptions
+        {
             CloseOnEscapeKey = true,
             BackdropClick = false,
             MaxWidth = MaxWidth.Small,
