@@ -1,4 +1,7 @@
+using Api.Controllers;
+using Api.Data;
 using Api.Services;
+using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,13 +23,22 @@ builder
         };
     });
 
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    //app.UseExceptionHandler("/error");
     app.MapOpenApi();
     app.MapScalarApiReference();
+}
+else
+{
+    //app.UseExceptionHandler("/error");
 }
 
 app.UseHttpsRedirection();

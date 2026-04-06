@@ -5,14 +5,10 @@ namespace Api.Models;
 
 public class ProxmoxHost
 {
-    public int Id { get; set; }
-
-    [Required]
+    public Guid Id { get; set; }
     public required string HostName { get; set; }
-
-    [Required]
     public required string ServerUrl { get; set; }
-
-    [Required]
     public required string ApiToken { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public bool IsActive { get; set; } = false;
 }
