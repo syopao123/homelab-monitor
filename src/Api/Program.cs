@@ -12,6 +12,7 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddControllers();
 builder.Services.AddScoped<IProxmoxService, ProxmoxService>();
+builder.Services.AddScoped<IHostManagerService, HostManagerService>();
 builder
     .Services.AddHttpClient("TestProxmoxConnection")
     .ConfigurePrimaryHttpMessageHandler(() =>

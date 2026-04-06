@@ -15,8 +15,7 @@ public class ProxmoxService : IProxmoxService
     {
         var client = _httpClientFactory.CreateClient("TestProxmoxConnection");
 
-        string baseUrl = "https://";
-        baseUrl += request.ServerUrl.EndsWith("/") ? request.ServerUrl : request.ServerUrl + "/";
+        string baseUrl = request.ServerUrl;
         client.BaseAddress = new Uri(baseUrl);
         Console.WriteLine($"PVEAPIToken={request.ApiToken}");
         client.DefaultRequestHeaders.TryAddWithoutValidation(
