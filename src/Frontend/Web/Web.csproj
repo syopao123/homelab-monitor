@@ -16,7 +16,6 @@
     <Folder Include="Components/Custom/Dashboard/" />
     <Folder Include="Components/Custom/Settings/" />
     <Folder Include="Components/Custom/Storage/" />
-    <Folder Include="Services/" />
   </ItemGroup>
 
   <ItemGroup>

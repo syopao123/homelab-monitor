@@ -1,0 +1,72 @@
+﻿@using Shared.Dtos
+@using Web.Services
+@inject INodeService _nodeService;
+
+<MudCard Class="p-4 pt-5 rounded-4" Style="min-width: 500px; max-width: 50%;" Elevation="0" Outlined="true">
+    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+        <MudText Typo="Typo.h6">Cluster Nodes</MudText>
+        <MudIconButton OnClick="() => RefreshNodes()" Icon="@Icons.Material.Filled.Refresh" Size="Size.Medium" Color="Color.Primary" />
+    </MudStack>
+    <MudText Typo="Typo.body2" Class="fw-light">Select which node to monitor from Main Proxmox Server</MudText>
+    <MudDivider Class="py-3" Style="border-color: transparent;" />
+
+    <MudGrid>
+        @if (nodes.Count == 0) {
+            <MudItem>
+                <MudAlert Severity="Severity.Warning">No nodes found.</MudAlert>
+            </MudItem>
+        }
+        @foreach (var node in nodes)
+        {
+            <MudItem>
+                <MudCard Elevation="0" Outlined="true" Class=@(node.IsSelected ? "p-3 pb-2 rounded-3 border-2 border-secondary" : "p-3 pb-2 rounded-3") Style="min-width: 250px;" role="button" @onclick="() => SelectNode(node.NodeName!)" >
+                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                        <div class="d-flex gap-3 align-items-center">
+                            <MudIcon Icon="@Icons.Material.Outlined.Storage" Size="Size.Small" />
+                            <MudText Typo="Typo.body2">@node.NodeName</MudText>
+                        </div>
+                        @if (node.IsSelected) {
+                            <MudIcon Icon="@Icons.Material.Outlined.Check" Color="Color.Primary" Size="Size.Small" />
+                        }
+                    </MudStack>
+                    <MudDivider Class="py-1" Style="border-color: transparent;" />
+                    <div class="d-flex justify-content-end align-items-center">
+                        @if (node.Status == "online") {
+                            <MudChip T="string" Color="Color.Success" Size="Size.Small">Online</MudChip>
+                        }
+                    </div>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+    <MudStack Row="true" Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+        @if(_isLoading) {
+            <MudProgressCircular Color="Color.Info" Indeterminate="true" Size="Size.Small"/>
+        }
+    </MudStack>
+</MudCard>
+
+@code {
+    private List<NodeDto> nodes = new List<NodeDto>();
+    private bool _isLoading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        nodes = await _nodeService.GetNodesAsync();
+    }
+
+    private async Task RefreshNodes() {
+        _isLoading = true;
+        nodes = await _nodeService.GetNodesAsync();
+        _isLoading = false;
+    }
+
+    private async Task SelectNode(string name) {
+        _isLoading = true;
+        var success = await _nodeService.UpdateSelectedNodeAsync(name);
+        if (success) {
+            nodes = await _nodeService.GetNodesAsync();
+        }
+        _isLoading = false;
+    }
+}

@@ -1,7 +1,19 @@
 ﻿@using Web.Components.Custom.Auth
+@using Web.Services
+@implements IDisposable
 @inject IDialogService DialogService
+@inject IHealthMonitorService _healthMonitor;
 
 <MudNavMenu>
+    @if (!_healthMonitor.IsOnline)
+    {
+        <MudAlert Severity="Severity.Error">
+            @if (_isDrawerOpen)
+            {
+                <span>API connection is lost</span>
+            }
+        </MudAlert>
+    }
     <MudNavLink Icon="@Icons.Material.Filled.Dashboard" Href="/" Match="NavLinkMatch.All">Dashboard
     </MudNavLink>
     <MudNavLink Icon="@Icons.Material.Filled.Computer" Href="/compute" Match="NavLinkMatch.All">Compute
@@ -18,10 +30,28 @@
 </MudNavMenu>
 
 @code {
+    [Parameter]
+    public bool _isDrawerOpen { get; set; }
+
     private Task OpenDialogAsync()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
 
         return DialogService.ShowAsync<LogoutDialog>("Logout", options);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _healthMonitor.OnStatusChanged += HandleStatusChanged;
+    }
+
+    private void HandleStatusChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        _healthMonitor.OnStatusChanged -= HandleStatusChanged;
     }
 }

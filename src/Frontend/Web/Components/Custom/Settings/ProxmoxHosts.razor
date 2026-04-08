@@ -1,4 +1,5 @@
 ﻿@using Shared.Dtos
+@using Web.Components.Pages
 @using Web.Services
 @inject IDialogService DialogService
 @inject IHostService _hostService
@@ -9,7 +10,7 @@
             <MudText Typo="Typo.h6">Proxmox Hosts</MudText>
         </div>
         <div>
-            <MudButton @onclick="OpenDialogAsync" Variant="Variant.Filled" Color="Color.Primary">
+            <MudButton @onclick="OpenDialogAsync" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small">
                 <MudIcon Icon="@Icons.Material.Outlined.Add" Size="Size.Medium" />
                 <span>Add Host</span>
             </MudButton>
@@ -17,41 +18,54 @@
     </MudStack>
     <MudDivider Class="py-3" Style="border-color: transparent;" />
     <MudStack Row="false" Justify="Justify.FlexStart">
-
-        @foreach (var host in proxmoxHosts)
+        @foreach (var error in errors)
         {
-            <MudCard Class="p-3 rounded-3" Elevation="0" Outlined="true">
-                <MudStack Row="true" Justify="Justify.FlexStart" AlignItems="AlignItems.Center">
-                    <MudText Typo="Typo.body1">@host.HostName</MudText>
-                    @if (@host.IsActive)
-                    {
-                        <MudChip T="string" Size="Size.Small" Color="Color.Primary">Active</MudChip>
-                    }
-                </MudStack>
-                <MudDivider Class="py-2" Style="border-color: transparent;" />
+            <MudAlert Severity="Severity.Error">@error</MudAlert>
+        }
 
-                <MudStack Row="true" Justify="Justify.FlexStart" AlignItems="AlignItems.Center">
-                    <MudIcon Icon="@Icons.Material.Outlined.Public" Size="Size.Small" />
-                    <MudText Typo="Typo.body2" Class="fw-light" Style="color: #6d6d6d;">@host.ServerUrl
-                    </MudText>
-                </MudStack>
-                <MudDivider Class="py-1" Style="border-color: transparent;" />
-                <MudStack Row="true" Justify="Justify.FlexStart" AlignItems="AlignItems.Center">
-                    <MudIcon Icon="@Icons.Material.Outlined.Key" Size="Size.Small" />
-                    <div class="gap-1 d-flex align-items-center" style="width: 100%;">
-                        @if (proxmoxShowToken[@host.Id])
+        @if (proxmoxHosts!.Count > 0)
+        {
+            @foreach (var host in proxmoxHosts)
+            {
+                <MudCard Class="p-3 rounded-3" Elevation="0" Outlined="true">
+                    <MudStack Row="true" Justify="Justify.FlexStart" AlignItems="AlignItems.Center">
+                        <MudText Typo="Typo.body1">@host.HostName</MudText>
+                        @if (@host.IsActive)
                         {
-                            <MudTextField @bind-Value="host.ApiToken" Underline="false" InputType="InputType.Text"
-                                          Disabled="true" />
-                        } else {
-                            <MudField Typo="Typo.body2" Style="color: darkgray;" Underline="false">•••••••••••••••</MudField>   
+                            <MudChip T="string" Size="Size.Small" Color="Color.Primary">Active</MudChip>
                         }
-                        <MudIconButton Icon="@Icons.Material.Outlined.RemoveRedEye" Size="Size.Medium"
-                                       OnClick="@(() => ToggleTokenVisibility(@host.Id))" />
+                    </MudStack>
+                    <MudDivider Class="py-2" Style="border-color: transparent;" />
 
-                    </div>
-                </MudStack>
-            </MudCard>
+                    <MudStack Row="true" Justify="Justify.FlexStart" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Outlined.Public" Size="Size.Small" />
+                        <MudText Typo="Typo.body2" Class="fw-light" Style="color: #6d6d6d;">@host.ServerUrl
+                        </MudText>
+                    </MudStack>
+                    <MudDivider Class="py-1" Style="border-color: transparent;" />
+                    <MudStack Row="true" Justify="Justify.FlexStart" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Outlined.Key" Size="Size.Small" />
+                        <div class="gap-1 d-flex align-items-center" style="width: 100%;">
+                            @if (proxmoxShowToken[@host.Id])
+                            {
+                                <MudTextField @bind-Value="host.ApiToken" Underline="false" InputType="InputType.Text"
+                                              Disabled="true" />
+                            }
+                            else
+                            {
+                                <MudField Typo="Typo.body2" Style="color: darkgray;" Underline="false">•••••••••••••••</MudField>
+                            }
+                            <MudIconButton Icon="@Icons.Material.Outlined.RemoveRedEye" Size="Size.Medium"
+                                           OnClick="@(() => ToggleTokenVisibility(@host.Id))" />
+
+                        </div>
+                    </MudStack>
+                </MudCard>
+            }
+        }
+        else
+        {
+            <MudAlert Severity="Severity.Warning">Unable to detect any hosts.</MudAlert>
         }
     </MudStack>
 </MudCard>
@@ -59,11 +73,20 @@
 @code {
     private Dictionary<Guid, bool> proxmoxShowToken = new();
     private List<ProxmoxHostDto> proxmoxHosts = new();
+    
+    private List<string> errors = new();
 
     protected override async Task OnInitializedAsync()
     {
+        // Check API connection
+        var apiResponse = await _hostService.CheckApiStatusAsync();
+        if (apiResponse.Contains("Error"))
+            errors.Add(apiResponse);
+
+        // Retrieve hosts
         var results = await _hostService.GetHostsAsync();
-        if (results != null) {
+        if (results != null)
+        {
             proxmoxHosts = results;
             proxmoxShowToken = proxmoxHosts.ToDictionary(h => h.Id, h => false);
         }
@@ -71,7 +94,8 @@
 
     private void ToggleTokenVisibility(Guid id)
     {
-        if (proxmoxShowToken.ContainsKey(id)) {
+        if (proxmoxShowToken.ContainsKey(id))
+        {
             proxmoxShowToken[id] = !proxmoxShowToken[id];
         }
     }

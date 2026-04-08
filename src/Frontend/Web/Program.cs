@@ -15,6 +15,14 @@ builder.Services.AddHttpClient<IHostService, HostService>(client =>
 {
     client.BaseAddress = new Uri("http://localhost:5088/");
 });
+builder.Services.AddHttpClient<INodeService, NodeService>(client =>
+{
+    client.BaseAddress = new Uri("http://localhost:5088/");
+});
+builder.Services.AddHttpClient<IHealthMonitorService, HealthMonitorService>(client =>
+{
+    client.BaseAddress = new Uri("http://localhost:5088/");
+});
 
 var app = builder.Build();
 
