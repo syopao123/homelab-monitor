@@ -17,7 +17,7 @@ public class DashboardManagerService : IDashboardManagerService
         _proxmoxService = proxmoxService;
     }
 
-    public async Task<NodeInfoDto> GetNodeInformationAsync(string name)
+    public async Task<NodeDto> GetNodeInformationAsync(string name)
     {
         // Get active host
         var activeHost = await _context.ProxmoxHosts.FirstOrDefaultAsync(h => h.IsActive == true);
@@ -28,7 +28,7 @@ public class DashboardManagerService : IDashboardManagerService
         string url = activeHost.ServerUrl;
         string token = activeHost.ApiToken;
         string nodeName = name;
-        var nodeInfo = await _proxmoxService.GetNodeInfoAsync(url, token, nodeName);
-        return nodeInfo;
+        var node = await _proxmoxService.GetNodeInfoAsync(url, token, nodeName);
+        return node;
     }
 }

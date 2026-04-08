@@ -3,6 +3,7 @@ using Api.Controllers;
 using Api.Data;
 using Api.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +24,10 @@ builder
 
 builder.Services.AddScoped<IHostManagerService, HostManagerService>();
 builder.Services.AddScoped<IDashboardManagerService, DashboardManagerService>();
+builder.Services.AddScoped<INodeManagerService, NodeManagerService>();
+
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<ApplicationDbContext>("Database");
 
 builder.Services.AddCors(options =>
 {
@@ -39,6 +44,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 );
 
 var app = builder.Build();
+app.MapHealthChecks("ping");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

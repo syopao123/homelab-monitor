@@ -11,4 +11,5 @@ public class ProxmoxHost
     public required string ApiToken { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.Now;
     public bool IsActive { get; set; } = false;
+    public string? SelectedNodeName { get; set; }
 }

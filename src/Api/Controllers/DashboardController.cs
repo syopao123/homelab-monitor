@@ -18,7 +18,7 @@ namespace Api.Controllers
 
         // TODO: Update frontend UI to select which node to select from the active host (Settings)
         [HttpGet("{nodeName}/info")]
-        public async Task<ActionResult<NodeInfoDto>> GetNodeInfoAsync(string nodeName)
+        public async Task<ActionResult<NodeDto>> GetNodeInfoAsync(string nodeName)
         {
             try
             {
