@@ -34,42 +34,6 @@ public class ProxmoxService : IProxmoxService
         }
     }
 
-    public async Task<NodeDto> GetNodeInfoAsync(string url, string token, string nodeName)
-    {
-        _httpClient.BaseAddress = new Uri(url.TrimEnd('/') + "/");
-        _httpClient.DefaultRequestHeaders.Clear();
-        _httpClient.DefaultRequestHeaders.TryAddWithoutValidation(
-            "Authorization",
-            $"PVEAPIToken={token}"
-        );
-        try
-        {
-            var root = await _httpClient.GetFromJsonAsync<JsonElement>(
-                "api2/json/nodes/" + nodeName + "/status"
-            );
-            var data = root.GetProperty("data");
-            var node = new NodeDto
-            {
-                NodeName = nodeName,
-                PveVersion = data.GetProperty("pveversion").GetString(),
-                KernelVersion = data.GetProperty("kversion").GetString(),
-                Uptime = FormatUptime(data.GetProperty("uptime").GetInt64()),
-            };
-            return node;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error: {ex.Message}");
-            throw new InvalidNodeOperationException("Failed to get node information.");
-        }
-    }
-
-    private string FormatUptime(long seconds)
-    {
-        var t = TimeSpan.FromSeconds(seconds);
-        return string.Format("{0:D} days, {1:D} hours", t.Days, t.Hours);
-    }
-
     public async Task<JsonElement> GetNodesAsync(string url, string token)
     {
         try
@@ -88,6 +52,64 @@ public class ProxmoxService : IProxmoxService
         catch (Exception ex)
         {
             throw new InvalidHostOperationException(ex.Message);
+        }
+    }
+
+    // Helper method
+    private HttpRequestMessage CreateRequest(string path, ProxmoxHostDto host)
+    {
+        var url = $"{host.ServerUrl.TrimEnd('/')}/{path.TrimStart('/')}";
+        var request = new HttpRequestMessage(HttpMethod.Get, url);
+        request.Headers.TryAddWithoutValidation("Authorization", $"PVEAPIToken={host.ApiToken}");
+        return request;
+    }
+
+    public async Task<JsonElement> GetNodeStatusAsync(string nodeName, ProxmoxHostDto host)
+    {
+        using var request = CreateRequest($"api2/json/nodes/{nodeName}/status", host);
+        var response = await _httpClient.SendAsync(request);
+        try
+        {
+            // Return node status information
+            var root = await response.Content.ReadFromJsonAsync<JsonElement>();
+            return root.GetProperty("data");
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidNodeOperationException($"Failed to get node information. {ex.Message}");
+        }
+    }
+
+    public async Task<JsonElement> GetNodeVmsAsync(string nodeName, ProxmoxHostDto host)
+    {
+        using var request = CreateRequest($"api2/json/nodes/{nodeName}/qemu", host);
+        var response = await _httpClient.SendAsync(request);
+
+        try
+        {
+            // Return vms info
+            var root = await response.Content.ReadFromJsonAsync<JsonElement>();
+            return root.GetProperty("data");
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
+
+    public async Task<JsonElement> GetNodeLxcAsync(string nodeName, ProxmoxHostDto host)
+    {
+        using var request = CreateRequest($"api2/json/nodes/{nodeName}/lxc", host);
+        var response = await _httpClient.SendAsync(request);
+        try
+        {
+            // Return lxcs info
+            var root = await response.Content.ReadFromJsonAsync<JsonElement>();
+            return root.GetProperty("data");
+        }
+        catch (Exception)
+        {
+            throw;
         }
     }
 }

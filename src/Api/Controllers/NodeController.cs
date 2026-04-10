@@ -1,6 +1,7 @@
 using Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Dtos;
+using Shared.Dtos.Nodes;
 
 namespace Api.Controllers
 {
@@ -28,6 +29,19 @@ namespace Api.Controllers
             if (result is false)
                 return NotFound(new { Message = "Node not found" });
             return NoContent();
+        }
+
+        // Retrieve info for Dashboard
+        [HttpGet("{nodeName}/dashboard")]
+        public async Task<ActionResult<NodeDashboardDto>> GetNodeDashboardAsync(string nodeName)
+        {
+            try
+            {
+                return Ok(await _nodeManager.GetNodeDashboardAsync(nodeName));
+            } catch (Exception ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
         }
     }
 }

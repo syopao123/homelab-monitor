@@ -23,8 +23,8 @@ builder
     );
 
 builder.Services.AddScoped<IHostManagerService, HostManagerService>();
-builder.Services.AddScoped<IDashboardManagerService, DashboardManagerService>();
 builder.Services.AddScoped<INodeManagerService, NodeManagerService>();
+builder.Services.AddScoped<IResourcesManagerService, ResourcesManagerService>();
 
 builder.Services.AddHealthChecks()
     .AddDbContextCheck<ApplicationDbContext>("Database");
