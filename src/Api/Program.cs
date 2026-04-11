@@ -12,8 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
-builder
-    .Services.AddHttpClient<IProxmoxService, ProxmoxService>()
+builder.Services.AddHttpClient<IProxmoxService, ProxmoxService>()
     .ConfigurePrimaryHttpMessageHandler(() =>
         new HttpClientHandler
         {
@@ -25,6 +24,7 @@ builder
 builder.Services.AddScoped<IHostManagerService, HostManagerService>();
 builder.Services.AddScoped<INodeManagerService, NodeManagerService>();
 builder.Services.AddScoped<IResourcesManagerService, ResourcesManagerService>();
+builder.Services.AddScoped<IStorageManagerService, StorageManagerService>();
 
 builder.Services.AddHealthChecks()
     .AddDbContextCheck<ApplicationDbContext>("Database");
