@@ -15,4 +15,6 @@ public interface IProxmoxService
     Task<JsonElement> GetNodeLxcAsync(string nodeName, ProxmoxHostDto host);
 
     Task<JsonElement> GetStorageListAsync(string nodeName, ProxmoxHostDto host);
+
+    Task<JsonElement> GetLogsAsync(string nodeName, ProxmoxHostDto host);
 }

@@ -25,6 +25,7 @@ builder.Services.AddScoped<IHostManagerService, HostManagerService>();
 builder.Services.AddScoped<INodeManagerService, NodeManagerService>();
 builder.Services.AddScoped<IResourcesManagerService, ResourcesManagerService>();
 builder.Services.AddScoped<IStorageManagerService, StorageManagerService>();
+builder.Services.AddScoped<IActivityLogsManagerService, ActivityLogsManagerService>();
 
 builder.Services.AddHealthChecks()
     .AddDbContextCheck<ApplicationDbContext>("Database");

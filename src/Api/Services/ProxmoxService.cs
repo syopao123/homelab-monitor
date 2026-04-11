@@ -117,7 +117,6 @@ public class ProxmoxService : IProxmoxService
     {
         using var request = CreateRequest($"api2/json/nodes/{nodeName}/storage", host);
         var response = await _httpClient.SendAsync(request);
-        
         try
         {
             var root = await response.Content.ReadFromJsonAsync<JsonElement>();
@@ -126,5 +125,20 @@ public class ProxmoxService : IProxmoxService
         {
             throw;
         }
+    }
+
+    public async Task<JsonElement> GetLogsAsync(string nodeName, ProxmoxHostDto host)
+    {
+        using var request = CreateRequest($"api2/json/nodes/{nodeName}/tasks", host);
+        var response = await _httpClient.SendAsync(request);
+        try
+        {
+            var root = await response.Content.ReadFromJsonAsync<JsonElement>();
+            return root.GetProperty("data");
+        } catch (Exception)
+        {
+            throw;
+        }
+        throw new NotImplementedException();
     }
 }

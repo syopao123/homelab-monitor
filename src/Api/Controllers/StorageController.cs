@@ -20,7 +20,7 @@ namespace Api.Controllers
         public async Task<ActionResult<List<StorageDto>>> GetStorageListAsync(string nodeName)
         {
             var result = await _storageManager.GetStorageListAsync(nodeName);
-            return result;
+            return Ok(result);
         }
     }
 }
