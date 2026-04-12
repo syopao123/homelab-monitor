@@ -7,8 +7,8 @@
         <MudDivider Class="my-2" Style="border-color: transparent;" />
 
         <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
-            <MudText Typo="Typo.h4">@totalLXC</MudText>
-            <MudText Typo="Typo.h5" Color="Color.Success">@totalRunningLXC</MudText>
+            <MudText Typo="Typo.h4">@Total</MudText>
+            <MudText Typo="Typo.h5" Color="Color.Success">@Running</MudText>
         </MudStack>
 
         <MudDivider Class="my-1" Style="border-color: transparent;" />
@@ -21,5 +21,8 @@
 </MudCard>
 
 @code {
-    private int totalLXC = 12, totalRunningLXC = 10;
+    [Parameter]
+    public required int Total { get; set; }
+    [Parameter]
+    public required int Running { get; set; }
 }

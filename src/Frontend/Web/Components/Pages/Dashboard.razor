@@ -1,48 +1,107 @@
 ﻿@page "/"
+@using Shared.Dtos.Nodes
 @using Web.Components.Custom.Dashboard
+@using Web.Services
+@inject INodeService _nodeService
+@implements IDisposable
+
 
 <PageTitle>Dashboard</PageTitle>
 
 <MudPaper Class="p-5" Elevation="0" Style="background-color: transparent;">
-    <MudText Typo="Typo.h5">Dashboard</MudText>
-    <MudDivider Class="my-2" Style="border-color: transparent;" />
+
+    @if (!_isLoading)
+    {
+        <MudText Typo="Typo.h5">Dashboard</MudText>
+        <MudDivider Class="my-2" Style="border-color: transparent;" />
     
-    @* Cards *@
-    <MudGrid Spacing="6" Justify="Justify.FlexStart">
-        <MudItem>
-            <CpuUsage />
-        </MudItem>
-        <MudItem>
-            <MemoryUsage />
-        </MudItem>
-        <MudItem>
-            <StorageUsage />
-        </MudItem>
-    </MudGrid>
+        @* Cards *@
+        <MudGrid Spacing="6" Justify="Justify.FlexStart">
+            <MudItem>
+                <CpuUsage Usage=@nodeDashboard.Metrics.CpuUsage />
+            </MudItem>
+            <MudItem>
+                <MemoryUsage MemoryTotal=@nodeDashboard.Metrics.MemoryTotal MemoryUsed=@nodeDashboard.Metrics.MemoryUsed />
+            </MudItem>
+            <MudItem>
+                <StorageUsage StorageUsed=@nodeDashboard.Metrics.StorageUsed
+                              StorageTotal=@nodeDashboard.Metrics.StorageTotal />
+            </MudItem>
+        </MudGrid>
 
-    <MudDivider Class="my-4" Style="border-color: transparent;" />
+        <MudDivider Class="my-4" Style="border-color: transparent;" />
 
-    @* Virtual Machines & LXC Containers *@
-    <MudGrid Spacing="6" Justify="Justify.FlexStart" Class="d-flex flex-grow-1">
-        <MudItem Class="flex-grow-1">
-            <VirtualMachines />
-        </MudItem>
-        <MudItem Class="flex-grow-1">
-            <LxcContainers />
-        </MudItem>
-    </MudGrid>
+        @* Virtual Machines & LXC Containers *@
+        <MudGrid Spacing="6" Justify="Justify.FlexStart" Class="d-flex flex-grow-1">
+            <MudItem Class="flex-grow-1">
+                <VirtualMachines Total=@nodeDashboard.Vms.Total Running=@nodeDashboard.Vms.Running />
+            </MudItem>
+            <MudItem Class="flex-grow-1">
+                <LxcContainers Total=@nodeDashboard.Lxcs.Total Running=@nodeDashboard.Lxcs.Running />
+            </MudItem>
+        </MudGrid>
 
-    <MudDivider Class="my-4" Style="border-color: transparent;" />
+        <MudDivider Class="my-4" Style="border-color: transparent;" />
 
-    @* Node Information *@
-    <MudGrid Spacing="6" Justify="Justify.FlexStart" Class="d-flex flex-grow-1">
-        <MudItem Class="flex-grow-1">
-            <NodeInfo />
-        </MudItem>
-    </MudGrid>
-
+        @* Node Information *@
+        <MudGrid Spacing="6" Justify="Justify.FlexStart" Class="d-flex flex-grow-1">
+            <MudItem Class="flex-grow-1">
+                <NodeInfo NodeName=@nodeDashboard.NodeName PveVersion=@nodeDashboard.PveVersion
+                          KernelVersion=@nodeDashboard.KernelVersion Uptime="@nodeDashboard.UptimeDisplay" />
+            </MudItem>
+        </MudGrid>
+    }
+    else
+    {
+        <MudStack Row="true" Justify="Justify.Center" AlignItems="AlignItems.Center">
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+        </MudStack>
+    }
 </MudPaper>
 
 @code {
+    private bool _isLoading { get; set; } = false;
+    private readonly CancellationTokenSource _cts = new();
 
+    private string ActiveNodeName { get; set; } = "";
+    private NodeDashboardDto nodeDashboard = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoading = true;
+        ActiveNodeName = await _nodeService.GetSelectedNodeNameAsync();
+        await LoadDashboardAsync();
+        _isLoading = false;
+
+        _ = RunRefreshLoop();
+    }
+
+    private async Task LoadDashboardAsync()
+    {
+        nodeDashboard = await _nodeService.GetNodeDashboardAsync(ActiveNodeName);
+    }
+
+    private async Task RunRefreshLoop()
+    {
+        using PeriodicTimer timer = new(TimeSpan.FromSeconds(10));
+
+        try
+        {
+            while (await timer.WaitForNextTickAsync(_cts.Token))
+            {
+                await LoadDashboardAsync();
+                StateHasChanged(); // Tell Blazor to re-render the UI with new metrics
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Handle component disposal
+        }
+    }
+
+    public void Dispose()
+    {
+        _cts.Cancel();
+        _cts.Dispose();
+    }
 }

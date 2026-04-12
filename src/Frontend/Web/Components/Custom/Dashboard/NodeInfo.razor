@@ -12,33 +12,33 @@
             <MudItem Style="min-width: 50%;">
                 <MudStack Row="true" Justify="Justify.SpaceBetween">
                     <MudText Typo="Typo.body1" Style="color: rgb(94, 94, 94);">Node Name</MudText>
-                    <MudText Typo="Typo.body1">@nodeName</MudText>
+                    <MudText Typo="Typo.body1">@NodeName</MudText>
                 </MudStack>
-                <MudDivider Class="my-2" Style="border-color: gray;"/>
+                <MudDivider Class="my-2" Style="border-color: gray;" />
             </MudItem>
 
             <MudItem Style="min-width: 50%;">
                 <MudStack Row="true" Justify="Justify.SpaceBetween">
                     <MudText Typo="Typo.body1" Style="color: rgb(94, 94, 94);">PVE Version</MudText>
-                    <MudText Typo="Typo.body1">@pveVersion</MudText>
+                    <MudText Typo="Typo.body1">@PveVersion</MudText>
                 </MudStack>
-                <MudDivider Class="my-2" Style="border-color: gray;"/>
+                <MudDivider Class="my-2" Style="border-color: gray;" />
             </MudItem>
 
             <MudItem Style="min-width: 50%;">
                 <MudStack Row="true" Justify="Justify.SpaceBetween">
                     <MudText Typo="Typo.body1" Style="color: rgb(94, 94, 94);">Kernel Version</MudText>
-                    <MudText Typo="Typo.body1">@kernelVersion</MudText>
+                    <MudText Typo="Typo.body1">@KernelVersion</MudText>
                 </MudStack>
-                <MudDivider Class="my-2" Style="border-color: gray;"/>
+                <MudDivider Class="my-2" Style="border-color: gray;" />
             </MudItem>
 
             <MudItem Style="min-width: 50%;">
                 <MudStack Row="true" Justify="Justify.SpaceBetween">
                     <MudText Typo="Typo.body1" Style="color: rgb(94, 94, 94);">Uptime</MudText>
-                    <MudText Typo="Typo.body1">@uptime</MudText>
+                    <MudText Typo="Typo.body1">@Uptime</MudText>
                 </MudStack>
-                <MudDivider Class="my-2" Style="border-color: gray;"/>
+                <MudDivider Class="my-2" Style="border-color: gray;" />
             </MudItem>
 
         </MudGrid>
@@ -47,8 +47,8 @@
 </MudCard>
 
 @code {
-    private string nodeName = "pve-homelab-01";
-    private string kernelVersion = "6.7.12-1-pve";
-    private string pveVersion = "8.2.4";
-    private string uptime = "15 days, 7 hours";
+    [Parameter] public required string NodeName { get; set; }
+    [Parameter] public required string PveVersion { get; set; }
+    [Parameter] public required string KernelVersion { get; set; }
+    [Parameter] public required string Uptime { get; set; }
 }

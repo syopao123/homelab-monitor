@@ -1,5 +1,10 @@
 ﻿@page "/compute"
 @using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Shared.Dtos
+@using Web.Services
+@inject IResourcesService _resourceService;
+@inject INodeService _nodeService;
 
 <PageTitle>Compute</PageTitle>
 
@@ -10,8 +15,8 @@
         </MudItem>
         <MudItem>
             <MudChipSet T="Color">
-                <MudChip T="string" Color="Color.Info">7 Running</MudChip>
-                <MudChip T="string" Color="Color.Surface">2 Stopped</MudChip>
+                <MudChip T="string" Color="Color.Info">@(RunningCount) Running</MudChip>
+                <MudChip T="string" Color="Color.Surface">@(StoppedCount) Stopped</MudChip>
             </MudChipSet>
         </MudItem>
 
@@ -28,7 +33,7 @@
         </MudItem>
         <MudItem>
             <MudTable Class="rounded-4" Items="@resources" Breakpoint="Breakpoint.SmAndDown" Loading="@_loading"
-                      LoadingProgressColor="Color.Info" Filter="new Func<Resource,bool>(FilterFunc1)">
+                      LoadingProgressColor="Color.Info" Filter="new Func<WorkloadDto,bool>(FilterFunc1)">
                 <HeaderContent>
                     <MudTh>ID</MudTh>
                     <MudTh>Type</MudTh>
@@ -40,33 +45,37 @@
                     <MudTh>Actions</MudTh>
                 </HeaderContent>
                 <RowTemplate>
-                    <MudTd>@context.id</MudTd>
+                    <MudTd>@context.Vmid</MudTd>
                     <MudTd>
-                        @if (context.type.Equals("VM"))
+                        @if (context.Type!.Equals("VM"))
                         {
-                            <MudChip T="string" Label="true" Color="Color.Primary" Variant="Variant.Outlined"
+                            <MudChip T="string" Label="true" Color="Color.Primary" Variant="Variant.Filled"
                                      Size="Size.Small">VM</MudChip>
                         }
-                        else if (context.type.Equals("LXC"))
+                        else if (context.Type.Equals("LXC"))
                         {
-                            <MudChip T="string" Label="true" Color="Color.Info" Variant="Variant.Outlined"
+                            <MudChip T="string" Label="true" Color="Color.Info" Variant="Variant.Filled"
                                      Size="Size.Small">LXC</MudChip>
                         }
                     </MudTd>
-                    <MudTd>@context.name</MudTd>
+                    <MudTd>@context.Name</MudTd>
                     <MudTd>
-                        @if (context.status)
+                        @if (string.IsNullOrEmpty(context.Status))
+                        {
+                            <MudChip T="string" Color="Color.Primary" Size="Size.Small">Unknown</MudChip>
+                        }
+                        else if (context.Status.Equals("running"))
                         {
                             <MudChip T="string" Color="Color.Success" Size="Size.Small">running</MudChip>
                         }
-                        else
+                        else if (context.Status.Equals("stopped"))
                         {
                             <MudChip T="string" Color="Color.Error" Size="Size.Small">stopped</MudChip>
                         }
                     </MudTd>
-                    <MudTd>@context.ipAddress</MudTd>
-                    <MudTd>@context.cpuCores</MudTd>
-                    <MudTd>@context.memory MB</MudTd>
+                    <MudTd>@context.IpAddress</MudTd>
+                    <MudTd>@context.CpuCores</MudTd>
+                    <MudTd>@(context.MemoryMax/(1024 * 1024)) MB</MudTd>
                     <MudTd>
                         <MudIconButton Icon="@Icons.Material.Filled.Refresh" Size="Size.Small" />
                     </MudTd>
@@ -84,76 +93,33 @@
 @code {
     private string searchString = "";
     private bool _loading;
+    private string ActiveNodeName { get; set; } = "";
+    private List<WorkloadDto> resources = new();
 
-    @* Temporary *@
-    public class Resource
+    protected override async Task OnInitializedAsync()
     {
-        public int id { get; set; }
-        public string type { get; set; } = "";
-        public string name { get; set; } = "";
-        public bool status { get; set; }
-        public string ipAddress { get; set; } = "";
-        public int cpuCores { get; set; }
-        public double memory { get; set; }
+        _loading = true;
+        ActiveNodeName = await _nodeService.GetSelectedNodeNameAsync();
+        resources = await _resourceService.GetResourcesAsync(ActiveNodeName);
+        _loading = false;
     }
 
-    private List<Resource> resources = new List<Resource>
-{
-    // --- Data from Image ---
-    new Resource { id = 100, type = "VM", name = "ubuntu-server-01", status = true, ipAddress = "192.168.1.100", cpuCores =
-2, memory = 4096 },
-    new Resource { id = 101, type = "VM", name = "debian-web-server", status = true, ipAddress = "192.168.1.101", cpuCores =
-4, memory = 8192 },
-    new Resource { id = 102, type = "VM", name = "windows-dev", status = false, ipAddress = "192.168.1.102", cpuCores = 4,
-memory = 16384 },
-    new Resource { id = 103, type = "LXC", name = "docker-host", status = true, ipAddress = "192.168.1.103", cpuCores = 4,
-memory = 8192 },
-    new Resource { id = 104, type = "LXC", name = "nginx-proxy", status = true, ipAddress = "192.168.1.104", cpuCores = 2,
-memory = 2048 },
-    new Resource { id = 105, type = "LXC", name = "database-server", status = true, ipAddress = "192.168.1.105", cpuCores =
-2, memory = 4096 },
-    new Resource { id = 106, type = "VM", name = "fedora-workstation", status = true, ipAddress = "192.168.1.106", cpuCores
-= 2, memory = 8192 },
-    new Resource { id = 107, type = "LXC", name = "monitoring-stack", status = true, ipAddress = "192.168.1.107", cpuCores =
-2, memory = 4096 },
-    new Resource { id = 108, type = "LXC", name = "backup-service", status = false, ipAddress = "192.168.1.108", cpuCores =
-1, memory = 2048 },
+    private int RunningCount => resources.Where(r => r.Status == "running").Count();
+    private int StoppedCount => resources.Where(r => r.Status == "stopped").Count();
 
-    // --- Generated Additional Data ---
-    new Resource { id = 109, type = "VM", name = "k8s-master-01", status = true, ipAddress = "192.168.1.109", cpuCores = 4,
-memory = 8192 },
-    new Resource { id = 110, type = "VM", name = "k8s-worker-01", status = true, ipAddress = "192.168.1.110", cpuCores = 8,
-memory = 16384 },
-    new Resource { id = 111, type = "VM", name = "k8s-worker-02", status = true, ipAddress = "192.168.1.111", cpuCores = 8,
-memory = 16384 },
-    new Resource { id = 112, type = "LXC", name = "redis-cache", status = true, ipAddress = "192.168.1.112", cpuCores = 1,
-memory = 1024 },
-    new Resource { id = 113, type = "VM", name = "win-server-sql", status = false, ipAddress = "192.168.1.113", cpuCores =
-6, memory = 32768 },
-    new Resource { id = 114, type = "LXC", name = "gitlab-runner", status = true, ipAddress = "192.168.1.114", cpuCores = 4,
-memory = 4096 },
-    new Resource { id = 115, type = "LXC", name = "mqtt-broker", status = true, ipAddress = "192.168.1.115", cpuCores = 1,
-memory = 512 },
-    new Resource { id = 116, type = "VM", name = "arch-testing-01", status = false, ipAddress = "192.168.1.116", cpuCores =
-2, memory = 4096 },
-    new Resource { id = 117, type = "LXC", name = "vpn-gateway", status = true, ipAddress = "192.168.1.117", cpuCores = 1,
-memory = 1024 },
-    new Resource { id = 118, type = "VM", name = "media-server-plex", status = true, ipAddress = "192.168.1.118", cpuCores =
-4, memory = 12288 }
-};
 
-    private bool FilterFunc1(Resource resource) => FilterFunc(resource, searchString);
-    private bool FilterFunc(Resource resource, string searchString)
+    private bool FilterFunc1(WorkloadDto resource) => FilterFunc(resource, searchString);
+    private bool FilterFunc(WorkloadDto resource, string searchString)
     {
         if (string.IsNullOrWhiteSpace(searchString))
             return true;
-        if (resource.type.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (resource.Type!.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (resource.name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (resource.Name!.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (resource.ipAddress.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        if (resource.IpAddress!.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if ($"{resource.type} {resource.name} {resource.ipAddress}".Contains(searchString))
+        if ($"{resource.Type} {resource.Name} {resource.IpAddress}".Contains(searchString))
             return true;
         return false;
     }
