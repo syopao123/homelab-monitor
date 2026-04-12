@@ -16,6 +16,20 @@ namespace Api.Controllers
             _nodeManager = nodeManager;
         }
 
+        [HttpGet("active-node")]
+        public async Task<ActionResult<string>> GetSelectedNodeNameAsync()
+        {
+            try
+            {
+                var result = await _nodeManager.GetSelectedNodeNameAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
+        }
+
         [HttpGet("list")]
         public async Task<ActionResult<List<NodeDto>>> GetNodesAsync()
         {
@@ -38,7 +52,8 @@ namespace Api.Controllers
             try
             {
                 return Ok(await _nodeManager.GetNodeDashboardAsync(nodeName));
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 return BadRequest(new { Message = ex.Message });
             }

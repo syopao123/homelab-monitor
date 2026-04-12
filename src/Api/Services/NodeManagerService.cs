@@ -20,6 +20,16 @@ public class NodeManagerService : INodeManagerService
         _context = context;
     }
 
+    public async Task<string> GetSelectedNodeNameAsync()
+    {
+        var activeHost = await _context.ProxmoxHosts.FirstOrDefaultAsync<ProxmoxHost>(h => h.IsActive == true);
+        if (activeHost is null)
+            throw new InvalidHostOperationException("No active host found.");
+        if (activeHost.SelectedNodeName is null)
+            throw new InvalidHostOperationException("No selected node found.");
+        return activeHost.SelectedNodeName;
+    }
+
     public async Task<List<NodeDto>> GetNodesAsync()
     {
         var activeHost = await _context.ProxmoxHosts.FirstOrDefaultAsync<ProxmoxHost>(h => h.IsActive == true);
