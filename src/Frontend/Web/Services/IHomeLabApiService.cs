@@ -9,5 +9,6 @@ public interface IHomeLabApiService
     Task<string> GetSelectedNodeNameAsync();
     Task<NodeDashboardDto> GetNodeDashboardDtoAsync(string nodeName);
     Task<List<WorkloadDto>> GetResourcesAsync(string nodeName);
+    Task<List<ActivityLogDto>> GetActivityLogsAsync(string nodeName);
     
 }

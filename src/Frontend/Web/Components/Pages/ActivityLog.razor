@@ -1,4 +1,9 @@
 ﻿@page "/activity-log"
+@using Shared.Dtos
+@using Web.Services
+@inject INodeService _nodeService;
+@inject IActivityLogsService _logsService;
+
 
 <PageTitle>Activity Log</PageTitle>
 
@@ -13,7 +18,7 @@
                     <MudIcon Icon="@Icons.Material.Outlined.CheckCircle" Color="Color.Success" Size="Size.Large" />
                 </MudPaper>
                 <MudPaper Elevation="0" Style="background-color: transparent">
-                    <MudText Typo="Typo.h6">13</MudText>
+                    <MudText Typo="Typo.h6">@SuccessCount</MudText>
                     <MudText Class="fw-light" Style="color: gray;">Successful</MudText>
                 </MudPaper>
             </MudStack>
@@ -24,7 +29,7 @@
                     <MudIcon Icon="@Icons.Material.Outlined.WarningAmber" Color="Color.Warning" Size="Size.Large" />
                 </MudPaper>
                 <MudPaper Elevation="0" Style="background-color: transparent">
-                    <MudText Typo="Typo.h6">1</MudText>
+                    <MudText Typo="Typo.h6">@WarningCount</MudText>
                     <MudText Class="fw-light" Style="color: gray;">Warnings</MudText>
                 </MudPaper>
             </MudStack>
@@ -35,7 +40,7 @@
                     <MudIcon Icon="@Icons.Material.Outlined.ErrorOutline" Color="Color.Error" Size="Size.Large" />
                 </MudPaper>
                 <MudPaper Elevation="0" Style="background-color: transparent">
-                    <MudText Typo="Typo.h6">1</MudText>
+                    <MudText Typo="Typo.h6">@ErrorCount</MudText>
                     <MudText Class="fw-light" Style="color: gray;">Errors</MudText>
                 </MudPaper>
             </MudStack>
@@ -46,27 +51,29 @@
 
     <MudTable Class="rounded-4" Items="@_activityLogs" Hover="true" Breakpoint="Breakpoint.Sm">
         <HeaderContent>
-            <MudTh>Timestamp</MudTh>
+            <MudTh>Start Time</MudTh>
+            <MudTh>End Time</MudTh>
             <MudTh>Action</MudTh>
             <MudTh>User</MudTh>
             <MudTh>Status</MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd DataLabel="Nr">@context.Timestamp</MudTd>
-            <MudTd DataLabel="Sign">@context.Action</MudTd>
-            <MudTd DataLabel="Name">@context.User</MudTd>
-            <MudTd DataLabel="Molar mass">
-                @if (@context.Status == ActivityLogStatus.Success)
+            <MudTd DataLabel="Nr">@context.StartTime</MudTd>
+            <MudTd DataLabel="Sign">@context.EndTime</MudTd>
+            <MudTd DataLabel="Name">@context.Action</MudTd>
+            <MudTd DataLabel="User">@context.User</MudTd>
+            <MudTd DataLabel="Status">
+                @if (context.Status is null)
                 {
-                    <MudChip T="string" Variant="Variant.Filled" Color="Color.Success">Running</MudChip>
+                    <MudChip T="string" Variant="Variant.Filled" Color="Color.Warning">Unknown</MudChip>
                 }
-                else if (@context.Status == ActivityLogStatus.Warning)
+                else if (context.Status.ToLower().Equals("ok"))
                 {
-                    <MudChip T="string" Variant="Variant.Filled" Color="Color.Warning">Warning</MudChip>
+                    <MudChip T="string" Variant="Variant.Filled" Color="Color.Success">Ok</MudChip>
                 }
-                else if (@context.Status == ActivityLogStatus.Error)
+                else
                 {
-                    <MudChip T="string" Variant="Variant.Filled" Color="Color.Error">Error</MudChip>
+                    <MudChip T="string" Variant="Variant.Filled" Color="Color.Warning">@context.Status.ToUpper()</MudChip>
                 }
             </MudTd>
         </RowTemplate>
@@ -78,49 +85,21 @@
 </MudPaper>
 
 @code {
-    public class ActivityLogElement
+    private int SuccessCount => _activityLogs.Where(l => l.Status!.ToLower() == "ok").Count();
+    private int WarningCount => _activityLogs.Where(l => l.Status!.ToLower() != "ok").Count();
+    private int ErrorCount => _activityLogs.Where(l => l.Status is null).Count();
+
+    private List<ActivityLogDto> _activityLogs = new();
+
+    // TODO: Implement proper exception handling
+    protected override async Task OnInitializedAsync()
     {
-        public string Timestamp { get; set; } = "";
-        public string Action { get; set; } = "";
-        public string User { get; set; } = "";
-        public ActivityLogStatus Status { get; set; } = 0;
+        try {
+        var nodeName = await _nodeService.GetSelectedNodeNameAsync();
+        _activityLogs = await _logsService.GetActivityLogsAsync(nodeName);
+        } catch (Exception ex) {
+            Console.WriteLine(ex.Message);
+        }
     }
 
-    public enum ActivityLogStatus
-    {
-        Success, Warning, Error
-    }
-
-    private List<ActivityLogElement> _activityLogs = new List<ActivityLogElement> {
-    new ActivityLogElement { Timestamp = "2026-03-29 14:23:45", Action = "VM 101 Started", User = "admin", Status =
-ActivityLogStatus.Success },
-    new ActivityLogElement { Timestamp = "2026-03-29 14:15:30", Action = "LXC 103 Stopped", User = "admin", Status =
-ActivityLogStatus.Success },
-    new ActivityLogElement { Timestamp = "2026-03-29 13:45:12", Action = "VM 102 Backup Completed", User = "system", Status
-= ActivityLogStatus.Success },
-    new ActivityLogElement { Timestamp = "2026-03-29 13:20:05", Action = "Storage zfs-pool Expanded", User = "admin", Status
-= ActivityLogStatus.Success },
-    new ActivityLogElement { Timestamp = "2026-03-29 12:55:33", Action = "LXC 104 Restarted", User = "admin", Status =
-ActivityLogStatus.Success },
-    new ActivityLogElement { Timestamp = "2026-03-29 12:30:18", Action = "VM 100 Snapshot Created", User = "admin", Status =
-ActivityLogStatus.Success },
-    new ActivityLogElement { Timestamp = "2026-03-29 11:45:27", Action = "LXC 105 Backup Failed", User = "system", Status =
-ActivityLogStatus.Error },
-    new ActivityLogElement { Timestamp = "2026-03-29 11:20:09", Action = "VM 106 Started", User = "admin", Status =
-ActivityLogStatus.Success },
-    new ActivityLogElement { Timestamp = "2026-03-29 10:55:44", Action = "Network Configuration Updated", User = "admin",
-Status = ActivityLogStatus.Success },
-    new ActivityLogElement { Timestamp = "2026-03-29 10:30:22", Action = "LXC 107 Created", User = "admin", Status =
-ActivityLogStatus.Success },
-    new ActivityLogElement { Timestamp = "2026-03-29 10:05:16", Action = "VM 101 Memory Increased", User = "admin", Status =
-ActivityLogStatus.Success },
-    new ActivityLogElement { Timestamp = "2026-03-29 09:40:55", Action = "Storage local-lvm Threshold Warning", User =
-"system", Status = ActivityLogStatus.Warning },
-    new ActivityLogElement { Timestamp = "2026-03-29 09:15:38", Action = "VM 102 Stopped", User = "admin", Status =
-ActivityLogStatus.Success },
-    new ActivityLogElement { Timestamp = "2026-03-29 08:50:21", Action = "Backup Job Completed", User = "system", Status =
-ActivityLogStatus.Success },
-    new ActivityLogElement { Timestamp = "2026-03-29 08:25:07", Action = "LXC 103 Started", User = "admin", Status =
-ActivityLogStatus.Success }
-    };
 }

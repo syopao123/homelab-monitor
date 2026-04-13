@@ -30,17 +30,10 @@ public class HomeLabApiService : IHomeLabApiService
 
     public async Task<NodeDashboardDto> GetNodeDashboardDtoAsync(string nodeName)
     {
-        try
-        {
-            var nodeDashboard = await _httpClient.GetFromJsonAsync<NodeDashboardDto>($"api/Node/{nodeName}/dashboard");
-            if (nodeDashboard is null)
-                throw new Exception("Node not found");
-            return nodeDashboard;
-        }
-        catch (Exception)
-        {
-            throw;
-        }
+        var nodeDashboard = await _httpClient.GetFromJsonAsync<NodeDashboardDto>($"api/Node/{nodeName}/dashboard");
+        if (nodeDashboard is null)
+            throw new Exception("Node not found");
+        return nodeDashboard;
     }
 
     public async Task<List<WorkloadDto>> GetResourcesAsync(string nodeName)
@@ -56,5 +49,13 @@ public class HomeLabApiService : IHomeLabApiService
         {
             throw;
         }
+    }
+
+    public async Task<List<ActivityLogDto>> GetActivityLogsAsync(string nodeName)
+    {
+        var logs = await _httpClient.GetFromJsonAsync<List<ActivityLogDto>>($"api/ActivityLogs/{nodeName}");
+        if (logs is null)
+            throw new Exception("Node not found");
+        return logs;
     }
 }
