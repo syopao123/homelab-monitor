@@ -5,7 +5,7 @@
             <MudIcon Icon="@storageIcon" Title="Storage" Size="Size.Medium" Color="Color.Primary" />
         </MudStack>
         <MudDivider Class="my-3" Style="border-color: transparent;" />
-        <MudText Typo="Typo.h5">@(UsageValue.ToString("#.##"))%</MudText>
+        <MudText Typo="Typo.h5">@(UsageValue)%</MudText>
             <MudProgressLinear Color="Color.Primary" Rounded="true" Size="Size.Small" Value="UsageValue" />
         </MudCardContent>
     </MudCard>

@@ -1,5 +1,7 @@
 ﻿@page "/"
 @using Shared.Dtos.Nodes
+@using System.Runtime.ExceptionServices
+@using System.Reflection.Metadata
 @using Web.Components.Custom.Dashboard
 @using Web.Services
 @inject INodeService _nodeService
@@ -66,37 +68,41 @@
     private string ActiveNodeName { get; set; } = "";
     private NodeDashboardDto nodeDashboard = new();
 
+    // TODO: Implement notification or alert when API is lost.
     protected override async Task OnInitializedAsync()
     {
         _isLoading = true;
-        ActiveNodeName = await _nodeService.GetSelectedNodeNameAsync();
-        await LoadDashboardAsync();
-        _isLoading = false;
-
-        _ = RunRefreshLoop();
+        try
+        {
+            ActiveNodeName = await _nodeService.GetSelectedNodeNameAsync();
+            await LoadDashboardAsync();
+            _ = RunRefreshLoop();
+            _isLoading = false;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
     }
 
     private async Task LoadDashboardAsync()
     {
         nodeDashboard = await _nodeService.GetNodeDashboardAsync(ActiveNodeName);
+        if (nodeDashboard is null)
+            _isLoading = true;
+        else
+            _isLoading = false;
     }
 
     private async Task RunRefreshLoop()
     {
         using PeriodicTimer timer = new(TimeSpan.FromSeconds(10));
-
-        try
+        while (await timer.WaitForNextTickAsync(_cts.Token))
         {
-            while (await timer.WaitForNextTickAsync(_cts.Token))
-            {
-                await LoadDashboardAsync();
-                StateHasChanged(); // Tell Blazor to re-render the UI with new metrics
-            }
+            await LoadDashboardAsync();
+            StateHasChanged(); // Tell Blazor to re-render the UI with new metrics
         }
-        catch (OperationCanceledException)
-        {
-            // Handle component disposal
-        }
+        _isLoading = true;
     }
 
     public void Dispose()
