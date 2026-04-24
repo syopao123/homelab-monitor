@@ -5,27 +5,34 @@
         <MudItem>
             <MudStack Row="false" Justify="Justify.Center" AlignItems="AlignItems.Center">
                 <MudText Typo="Typo.body1" Style="color: gray;">Total Capacity</MudText>
-                <MudText Typo="Typo.h5">8500 GB</MudText>
+                <MudText Typo="Typo.h5">@TotalCapacity GB</MudText>
             </MudStack>
         </MudItem>
         <MudItem>
             <MudStack Row="false" Justify="Justify.Center" AlignItems="AlignItems.Center">
                 <MudText Typo="Typo.body1" Style="color: gray;">Total Used</MudText>
-                <MudText Typo="Typo.h5">5670 GB</MudText>
+                <MudText Typo="Typo.h5">@TotalUsed GB</MudText>
             </MudStack>
         </MudItem>
         <MudItem>
             <MudStack Row="false" Justify="Justify.Center" AlignItems="AlignItems.Center">
                 <MudText Typo="Typo.body1" Style="color: gray;">Total Available</MudText>
-                <MudText Typo="Typo.h5">2830 GB</MudText>
+                <MudText Typo="Typo.h5">@TotalAvailable GB</MudText>
             </MudStack>
         </MudItem>
         <MudItem>
             <MudStack Row="false" Justify="Justify.Center" AlignItems="AlignItems.Center">
                 <MudText Typo="Typo.body1" Style="color: gray;">Storage Pools</MudText>
-                <MudText Typo="Typo.h5">4</MudText>
+                <MudText Typo="Typo.h5">@StorageCount</MudText>
             </MudStack>
         </MudItem>
     </MudGrid>
     <MudDivider Class="py-1" Style="border-color: transparent;" />
 </MudCard>
+
+@code {
+    [Parameter] public double TotalCapacity { get; set; }
+    [Parameter] public double TotalUsed { get; set; }
+    [Parameter] public double TotalAvailable { get; set; }
+    [Parameter] public int StorageCount { get; set; }
+}

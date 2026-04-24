@@ -12,6 +12,7 @@ builder.Services.AddScoped<LayoutState>(); // For toggling dark mode
 builder.Services.AddScoped<ProtectedLocalStorage>(); // For storing app's UI settings
 builder.Services.AddScoped<IResourcesService, ResourcesService>();
 builder.Services.AddScoped<IActivityLogsService, ActivityLogsService>();
+builder.Services.AddScoped<IStorageService, StorageService>();
 
 // TODO: Remove these three HttpClients and replace with a single HttpClient only
 builder.Services.AddHttpClient<IHostService, HostService>(client =>

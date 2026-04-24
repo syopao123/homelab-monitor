@@ -1,24 +1,66 @@
 ﻿@page "/storage"
+@using Shared.Dtos.Storage
 @using Web.Components.Custom.Storage
-
+@using Web.Services
+@inject INodeService _nodeService;
+@inject IStorageService _storageService;
 
 <PageTitle>Storage</PageTitle>
 
 <MudPaper Class="p-5" Elevation="0" Style="background-color: transparent;">
-    <MudText Typo="Typo.h5">Storage Pools</MudText>
-    <MudDivider Class="my-2" Style="border-color: transparent;" />
+    @if (!_isLoading)
+    {
+        <MudText Typo="Typo.h5">Storage Pools</MudText>
+        <MudDivider Class="my-2" Style="border-color: transparent;" />
 
-    @* Storage Pools *@
-    <StoragePools />
+        @* Storage Pools *@
+        <StoragePools Pool=_storageList />
 
-    <MudDivider Class="my-4" Style="border-color: transparent;" />
+        <MudDivider Class="my-4" Style="border-color: transparent;" />
 
-    @* Storage Overview *@
-    <StorageOverview />
+        @* Storage Overview *@
+        <StorageOverview TotalCapacity=@(TotalCapacity / (1024 * 1024 * 1024)) TotalUsed=@(TotalUsed / (1024 * 1024 * 1024))
+                         TotalAvailable=@(TotalAvailable/(1024 * 1024 * 1024)) StorageCount=StorageCount />
 
-    <MudDivider Class="my-4" Style="border-color: transparent;" />
+        <MudDivider Class="my-4" Style="border-color: transparent;" />
 
-    @* Storage Health *@
-    <StorageHealth />
+        @* Storage Health *@
+        <StorageHealth Storages=_storageList />
+    }
+    else
+    {
+        <MudStack Row="true" Justify="Justify.Center" AlignItems="AlignItems.Center">
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+        </MudStack>
+    }
 
 </MudPaper>
+
+@code {
+    private bool _isLoading { get; set; } = false;
+
+    // TODO: Return proper values
+    private List<StorageDto> _storageList = new();
+    private long TotalCapacity => _storageList.Sum(s => s.Total);
+    private long TotalUsed => _storageList.Sum(s => s.Used);
+    private long TotalAvailable => _storageList.Sum(s => s.Available);
+    private int StorageCount => _storageList.Count();
+
+    // TODO: Implement better exception handling
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _isLoading = true;
+            var nodeName = await _nodeService.GetSelectedNodeNameAsync();
+            if (nodeName is null)
+                throw new Exception("No node name found");
+            _storageList = await _storageService.GetStoragesAsync(nodeName);
+            _isLoading = false;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+}

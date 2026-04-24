@@ -1,6 +1,7 @@
 using System;
 using Shared.Dtos;
 using Shared.Dtos.Nodes;
+using Shared.Dtos.Storage;
 
 namespace Web.Services;
 
@@ -57,5 +58,13 @@ public class HomeLabApiService : IHomeLabApiService
         if (logs is null)
             throw new Exception("Node not found");
         return logs;
+    }
+
+    public async Task<List<StorageDto>> GetStoragesAsync(string nodeName)
+    {
+        var storages = await _httpClient.GetFromJsonAsync<List<StorageDto>>($"api/Storage/{nodeName}");
+        if (storages is null)
+            throw new Exception("Node not found");
+        return storages;
     }
 }

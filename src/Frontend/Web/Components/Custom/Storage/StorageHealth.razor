@@ -1,37 +1,27 @@
-﻿<MudCard Class="p-4 pt-5 rounded-4" Outlined="true">
+﻿@using MudBlazor.State
+@using Shared.Dtos.Storage
+<MudCard Class="p-4 pt-5 rounded-4" Outlined="true">
     <MudText Typo="Typo.h6">Storage Health</MudText>
     <MudDivider Class="py-2" Style="border-color: transparent;" />
-    <MudStack Row="true" Justify="Justify.SpaceBetween" Class="py-2">
-        <div class="d-flex align-items-center gap-3">
-            <MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Success" Size="Size.Small" />
-            <MudText>local</MudText>
-        </div>
-        <MudText Color="Color.Success">Healthy</MudText>
-    </MudStack>
-    <MudDivider Class="py-2" Style="border-color: black;" />
-    <MudStack Row="true" Justify="Justify.SpaceBetween" Class="py-2">
-        <div class="d-flex align-items-center gap-3">
-            <MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Success" Size="Size.Small" />
-            <MudText>local-lvm</MudText>
-        </div>
-        <MudText Color="Color.Success">Healthy</MudText>
-    </MudStack>
-    <MudDivider Class="py-1" />
-    <MudDivider Class="py-2" Style="border-color: black;" />
-    <MudStack Row="true" Justify="Justify.SpaceBetween" Class="py-2">
-        <div class="d-flex align-items-center gap-3">
-            <MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Success" Size="Size.Small" />
-            <MudText>zfs-pool</MudText>
-        </div>
-        <MudText Color="Color.Success">Healthy</MudText>
-    </MudStack>
-    <MudDivider Class="py-1" />
-    <MudDivider Class="py-2" Style="border-color: black;" />
-    <MudStack Row="true" Justify="Justify.SpaceBetween" Class="py-2">
-        <div class="d-flex align-items-center gap-3">
-            <MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Success" Size="Size.Small" />
-            <MudText>nfs-storage</MudText>
-        </div>
-        <MudText Color="Color.Success">Healthy</MudText>
-    </MudStack>
+    @foreach (var storage in Storages)
+    {
+        <MudStack Row="true" Justify="Justify.SpaceBetween" Class="py-2">
+            <div class="d-flex align-items-center gap-3">
+                <MudIcon Icon="@Icons.Material.Filled.Circle" Color="Color.Success" Size="Size.Small" />
+                <MudText>@storage.Storage</MudText>
+            </div>
+            @if (storage.IsActive) {
+                <MudText Color="Color.Success">Healthy</MudText>
+            } else {
+                <MudText Color="Color.Warning">Error</MudText>
+            }
+        </MudStack>
+        <MudDivider Class="py-1" />
+        <MudDivider Class="py-2" Style="border-color: black;" />
+    }
 </MudCard>
+
+@code {
+    [Parameter]
+    public List<StorageDto> Storages { get; set; } = new();
+}
