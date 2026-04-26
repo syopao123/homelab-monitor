@@ -139,6 +139,5 @@ public class ProxmoxService : IProxmoxService
         {
             throw;
         }
-        throw new NotImplementedException();
     }
 }
