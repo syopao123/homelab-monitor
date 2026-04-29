@@ -6,10 +6,11 @@ namespace Api.Services;
 
 public interface IHostManagerService
 {
-    Task<ProxmoxHost> RegisterHostAsync(CreateHostRequestDto host);
+    Task<ProxmoxHostDto> RegisterHostAsync(CreateHostRequestDto host);
     Task<IEnumerable<ProxmoxHost>> GetHostsAsync();
+    Task<ProxmoxHostDto> GetHostByIdAsync(Guid id);
     Task<ProxmoxHost>? UpdateHostAsync(Guid id, UpdateHostDto dto);
-    Task<bool> SetActiveHostAsync(Guid id);
+    Task SetActiveHostAsync(Guid id);
 
-    Task<bool> DeleteHostAsync(Guid id);
+    Task DeleteHostAsync(Guid id);
 }

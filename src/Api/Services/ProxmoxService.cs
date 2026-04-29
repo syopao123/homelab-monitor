@@ -13,28 +13,8 @@ public class ProxmoxService : IProxmoxService
         _httpClient = httpClient;
     }
 
-    public async Task<bool> TestConnectionAsync(CreateHostRequestDto request)
-    {
-        _httpClient.BaseAddress = new Uri(request.ServerUrl.TrimEnd('/') + "/");
-        _httpClient.DefaultRequestHeaders.Clear();
-        _httpClient.DefaultRequestHeaders.TryAddWithoutValidation(
-            "Authorization",
-            $"PVEAPIToken={request.ApiToken}"
-        );
-        try
-        {
-            // Check for response
-            var response = await _httpClient.GetAsync("api2/json/version");
-            return response.IsSuccessStatusCode;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Connection failed: {ex.Message}");
-            return false;
-        }
-    }
-
-    public async Task<JsonElement> GetNodesAsync(string url, string token)
+    // Helper method
+    private void ApplyRequestHeaders(string url, string token)
     {
         try
         {
@@ -44,12 +24,38 @@ public class ProxmoxService : IProxmoxService
                 "Authorization",
                 $"PVEAPIToken={token}"
             );
+        }
+        catch (UriFormatException ex)
+        {
+            throw new ProxmoxConnectionException(ex.Message);
+        }
+    }
 
+    public async Task<bool> TestConnectionAsync(CreateHostRequestDto request)
+    {
+        ApplyRequestHeaders(request.ServerUrl, request.ApiToken);
+        try
+        {
+            // Check for response
+            var response = await _httpClient.GetAsync("api2/json/version");
+            return response.IsSuccessStatusCode;
+        }
+        catch (HttpRequestException ex)
+        {
+            throw new ProxmoxConnectionException(ex.Message);
+        }
+    }
+
+    public async Task<JsonElement> GetNodesAsync(string url, string token)
+    {
+        ApplyRequestHeaders(url, token);
+        try
+        {
             var root = await _httpClient.GetFromJsonAsync<JsonElement>("api2/json/nodes");
             var data = root.GetProperty("data");
             return data;
         }
-        catch (Exception ex)
+        catch (HttpRequestException ex)
         {
             throw new InvalidHostOperationException(ex.Message);
         }
@@ -120,8 +126,9 @@ public class ProxmoxService : IProxmoxService
         try
         {
             var root = await response.Content.ReadFromJsonAsync<JsonElement>();
-            return root.GetProperty("data");            
-        } catch (Exception)
+            return root.GetProperty("data");
+        }
+        catch (Exception)
         {
             throw;
         }
@@ -135,7 +142,8 @@ public class ProxmoxService : IProxmoxService
         {
             var root = await response.Content.ReadFromJsonAsync<JsonElement>();
             return root.GetProperty("data");
-        } catch (Exception)
+        }
+        catch (Exception)
         {
             throw;
         }

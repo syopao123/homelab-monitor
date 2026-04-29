@@ -19,16 +19,8 @@ namespace Api.Controllers
         [HttpGet("{nodeName}")]
         public async Task<ActionResult<List<WorkloadDto>>> GetResourcesAsync(string nodeName)
         {
-            try
-            {
-                var result = await _resourcesManager.GetResourcesAsync(nodeName);
-                return Ok(result);
-            } catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var result = await _resourcesManager.GetResourcesAsync(nodeName);
+            return Ok(result);
         }
-
-        
     }
 }

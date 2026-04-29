@@ -25,7 +25,7 @@ public class ResourcesManagerService : IResourcesManagerService
             throw new InvalidHostOperationException("No active host found.");
 
         if (activeHost.SelectedNodeName != nodeName)
-            throw new InvalidHostOperationException("Node does not match active host.");
+            throw new InvalidNodeOperationException("Node does not match active host.");
 
         var hostDto = new ProxmoxHostDto
         {

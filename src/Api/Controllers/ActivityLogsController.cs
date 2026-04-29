@@ -19,8 +19,7 @@ namespace Api.Controllers
         [HttpGet("{nodeName}")]
         public async Task<ActionResult<List<ActivityLogDto>>> GetLogsAsync(string nodeName)
         {
-            var result = await _logsManager.GetLogsAsync(nodeName);
-            return Ok(result);
+            return Ok(await _logsManager.GetLogsAsync(nodeName));
         }
     }
 }

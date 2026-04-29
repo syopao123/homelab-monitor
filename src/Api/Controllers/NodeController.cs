@@ -1,3 +1,4 @@
+using Api.Exceptions;
 using Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Dtos;
@@ -19,15 +20,8 @@ namespace Api.Controllers
         [HttpGet("active-node")]
         public async Task<ActionResult<string>> GetSelectedNodeNameAsync()
         {
-            try
-            {
-                var result = await _nodeManager.GetSelectedNodeNameAsync();
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { Message = ex.Message });
-            }
+            var result = await _nodeManager.GetSelectedNodeNameAsync();
+            return Ok(result);
         }
 
         [HttpGet("list")]
@@ -39,9 +33,7 @@ namespace Api.Controllers
         [HttpPatch("{nodeName}/activate")]
         public async Task<IActionResult> UpdateSelectedNodeAsync(string nodeName)
         {
-            var result = await _nodeManager.UpdateSelectedNodeAsync(nodeName);
-            if (result is false)
-                return NotFound(new { Message = "Node not found" });
+            await _nodeManager.UpdateSelectedNodeAsync(nodeName);
             return NoContent();
         }
 
@@ -49,14 +41,13 @@ namespace Api.Controllers
         [HttpGet("{nodeName}/dashboard")]
         public async Task<ActionResult<NodeDashboardDto>> GetNodeDashboardAsync(string nodeName)
         {
-            try
-            {
-                return Ok(await _nodeManager.GetNodeDashboardAsync(nodeName));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { Message = ex.Message });
-            }
+            return Ok(await _nodeManager.GetNodeDashboardAsync(nodeName));
+        }
+
+        [HttpGet("test-error")]
+        public IActionResult GetTestError()
+        {
+            throw new InvalidNodeOperationException("This is a test error from the middleware");
         }
     }
 }

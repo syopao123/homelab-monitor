@@ -19,7 +19,7 @@ public class HostManagerService : IHostManagerService
         _context = context;
     }
 
-    public async Task<ProxmoxHost> RegisterHostAsync(CreateHostRequestDto dto)
+    public async Task<ProxmoxHostDto> RegisterHostAsync(CreateHostRequestDto dto)
     {
         var isReachable = await _proxmoxService.TestConnectionAsync(dto);
         if (!isReachable)
@@ -31,14 +31,35 @@ public class HostManagerService : IHostManagerService
         var newHost = new ProxmoxHost
         {
             HostName = dto.HostName,
-            ServerUrl = $"https://{dto.ServerUrl}/",
+            ServerUrl = dto.ServerUrl,
             ApiToken = dto.ApiToken,
             CreatedAt = DateTime.UtcNow,
             IsActive = false,
         };
         _context.ProxmoxHosts.Add(newHost);
         await _context.SaveChangesAsync();
-        return newHost;
+
+        return new ProxmoxHostDto
+        {
+            Id = newHost.Id,
+            HostName = newHost.HostName,
+            ServerUrl = newHost.ServerUrl,
+            ApiToken = newHost.ApiToken,
+        };
+    }
+
+    public async Task<ProxmoxHostDto> GetHostByIdAsync(Guid id)
+    {
+        var result = await _context.ProxmoxHosts.FindAsync(id);
+        if (result is null)
+            throw new InvalidHostOperationException("Host not found.");
+        return new ProxmoxHostDto
+        {
+            Id = result.Id,
+            HostName = result.HostName,
+            ServerUrl = result.ServerUrl,
+            ApiToken = result.ApiToken,
+        };
     }
 
     public async Task<IEnumerable<ProxmoxHost>> GetHostsAsync()
@@ -52,8 +73,7 @@ public class HostManagerService : IHostManagerService
         var host = await _context.ProxmoxHosts.FirstOrDefaultAsync(h => h.Id == id);
         if (host is null)
         {
-            // Return null if host is not found
-            return null!;
+            throw new InvalidHostOperationException("Host not found.");
         }
         var finalHostName = string.IsNullOrWhiteSpace(dto.HostName) ? host.HostName : dto.HostName;
         var finalServerUrl = string.IsNullOrWhiteSpace(dto.ServerUrl)
@@ -81,14 +101,15 @@ public class HostManagerService : IHostManagerService
         return host;
     }
 
-    public async Task<bool> SetActiveHostAsync(Guid id)
+    public async Task SetActiveHostAsync(Guid id)
     {
         // Find the host
         var newActiveHost = await _context.ProxmoxHosts.FindAsync(id);
         if (newActiveHost is null)
-            return false;
+            throw new InvalidHostOperationException("Host not found.");
         if (newActiveHost.IsActive)
-            return true;
+            return;
+        
         // Set all hosts to inactive
         var hosts = await _context.ProxmoxHosts.Where(h => h.IsActive == true).ToListAsync();
         foreach (var host in hosts)
@@ -98,18 +119,16 @@ public class HostManagerService : IHostManagerService
 
         newActiveHost.IsActive = true;
         await _context.SaveChangesAsync();
-        return true;
     }
 
-    public async Task<bool> DeleteHostAsync(Guid id)
+    public async Task DeleteHostAsync(Guid id)
     {
         var host = await _context.ProxmoxHosts.FindAsync(id);
         if (host is null)
-            return false;
+            throw new InvalidHostOperationException("Host not found.");
         if (host.IsActive)
             throw new InvalidHostOperationException("Cannot delete active host.");
         _context.ProxmoxHosts.Remove(host);
         await _context.SaveChangesAsync();
-        return true;
     }
 }

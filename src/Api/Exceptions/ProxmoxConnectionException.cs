@@ -6,6 +6,6 @@ public class ProxmoxConnectionException : Exception
         : base(message) { }
 
     // Good for debugging: pass the inner exception if the HttpClient crashed
-    public ProxmoxConnectionException(string message, Exception innerException)
-        : base(message, innerException) { }
+    // public ProxmoxConnectionException(string message, Exception innerException)
+    //     : base(message, innerException) { }
 }

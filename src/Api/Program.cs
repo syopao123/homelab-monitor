@@ -10,6 +10,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
+// Global Error Handler
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 builder.Services.AddHttpClient<IProxmoxService, ProxmoxService>()
@@ -50,15 +55,11 @@ app.MapHealthChecks("ping");
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    //app.UseExceptionHandler("/error");
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
-else
-{
-    //app.UseExceptionHandler("/error");
-}
 
+app.UseExceptionHandler();
 app.UseCors();
 app.UseHttpsRedirection();
 
