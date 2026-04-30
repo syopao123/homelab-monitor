@@ -10,17 +10,18 @@ namespace Api.Controllers
     public class ResourcesController : ControllerBase
     {
         private readonly IResourcesManagerService _resourcesManager;
+        private readonly NodeContext _nodeContext;
 
-        public ResourcesController(IResourcesManagerService resourcesManager)
+        public ResourcesController(IResourcesManagerService resourcesManager, NodeContext nodeContext)
         {
             _resourcesManager = resourcesManager;
+            _nodeContext = nodeContext;
         }
 
-        [HttpGet("{nodeName}")]
-        public async Task<ActionResult<List<WorkloadDto>>> GetResourcesAsync(string nodeName)
+        [HttpGet]
+        public async Task<ActionResult<List<WorkloadDto>>> GetResourcesAsync()
         {
-            var result = await _resourcesManager.GetResourcesAsync(nodeName);
-            return Ok(result);
+            return Ok(await _resourcesManager.GetResourcesAsync(_nodeContext.ActiveNodeName));
         }
     }
 }

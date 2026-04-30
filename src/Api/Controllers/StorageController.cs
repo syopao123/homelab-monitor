@@ -10,17 +10,18 @@ namespace Api.Controllers
     public class StorageController : ControllerBase
     {
         private readonly IStorageManagerService _storageManager;
+        private readonly NodeContext _nodeContext;
 
-        public StorageController(IStorageManagerService storageManager)
+        public StorageController(IStorageManagerService storageManager, NodeContext nodeContext)
         {
             _storageManager = storageManager;
+            _nodeContext = nodeContext;
         }
 
-        [HttpGet("{nodeName}")]
-        public async Task<ActionResult<List<StorageDto>>> GetStorageListAsync(string nodeName)
+        [HttpGet]
+        public async Task<ActionResult<List<StorageDto>>> GetStorageListAsync()
         {
-            var result = await _storageManager.GetStorageListAsync(nodeName);
-            return Ok(result);
+            return Ok(await _storageManager.GetStorageListAsync(_nodeContext.ActiveNodeName));
         }
     }
 }

@@ -11,43 +11,38 @@ namespace Api.Controllers
     public class NodeController : ControllerBase
     {
         private readonly INodeManagerService _nodeManager;
+        private readonly NodeContext _nodeContext;
 
-        public NodeController(INodeManagerService nodeManager)
+        public NodeController(INodeManagerService nodeManager, NodeContext nodeContext)
         {
             _nodeManager = nodeManager;
+            _nodeContext = nodeContext;
         }
 
         [HttpGet("active-node")]
-        public async Task<ActionResult<string>> GetSelectedNodeNameAsync()
+        public async Task<ActionResult<string>> GetActiveNodeName()
         {
-            var result = await _nodeManager.GetSelectedNodeNameAsync();
+            var result = await _nodeManager.GetActiveNodeNameAsync();
             return Ok(result);
         }
 
         [HttpGet("list")]
-        public async Task<ActionResult<List<NodeDto>>> GetNodesAsync()
+        public async Task<ActionResult<List<NodeDto>>> GetNodes()
         {
             return Ok(await _nodeManager.GetNodesAsync());
         }
 
         [HttpPatch("{nodeName}/activate")]
-        public async Task<IActionResult> UpdateSelectedNodeAsync(string nodeName)
+        public async Task<IActionResult> ActivateNode(string nodeName)
         {
-            await _nodeManager.UpdateSelectedNodeAsync(nodeName);
+            await _nodeManager.ActivateNodeAsync(nodeName);
             return NoContent();
         }
 
-        // Retrieve info for Dashboard
-        [HttpGet("{nodeName}/dashboard")]
-        public async Task<ActionResult<NodeDashboardDto>> GetNodeDashboardAsync(string nodeName)
+        [HttpGet("dashboard")]
+        public async Task<ActionResult<NodeDashboardDto>> GetNodeDashboardAsync()
         {
-            return Ok(await _nodeManager.GetNodeDashboardAsync(nodeName));
-        }
-
-        [HttpGet("test-error")]
-        public IActionResult GetTestError()
-        {
-            throw new InvalidNodeOperationException("This is a test error from the middleware");
+            return Ok(await _nodeManager.GetNodeDashboardAsync(_nodeContext.ActiveNodeName));
         }
     }
 }

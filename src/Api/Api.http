@@ -1,6 +1,55 @@
-@Api_HostAddress = http://localhost:5088
+@baseUrl = http://localhost:5088
+@id = 019d627a-5d19-7de4-9885-e12fe9187db9
+@deleteId = 019dded9-d696-77b3-a430-6c63b46bb788
 
-GET {{Api_HostAddress}}/weatherforecast/
+@hostName = pve
+@serverUrl = https://192.168.1.200:8006/
+@apiToken = homelab-svc@pve!monitor-app=00a5b809-58d1-4204-b5f2-0b8cf1fd8cca
+
+
+### Test proxmox connection ###
+POST {{baseUrl}}/api/Host/test-connection
+Content-Type: application/json
+
+{
+    "HostName": "{{hostName}}",
+    "ServerUrl": "{{serverUrl}}",
+    "ApiToken": "{{apiToken}}"
+}
+
+### Get all proxmox hosts ###
+GET {{baseUrl}}/api/Host/list
 Accept: application/json
 
-###
+### Get proxmox host by ID ###
+GET {{baseUrl}}/api/Host/{{id}}
+
+### Add proxmox host ###
+POST {{baseUrl}}/api/Host/register
+Accept: application/json
+Content-Type: application/json
+
+{
+    "HostName": "test",
+    "ServerUrl": "{{serverUrl}}",
+    "ApiToken": "{{apiToken}}"
+}
+
+### Delete proxmox host ###
+DELETE {{baseUrl}}/api/Host/{{deleteId}}
+
+### Get node dashboard ###
+GET {{baseUrl}}/api/Node/dashboard
+Accept: application/json
+
+### Get resources ###
+GET {{baseUrl}}/api/Resources
+Accept: application/json
+
+### Get storage info ###
+GET {{baseUrl}}/api/Storage
+Accept: application/json
+
+### Get activity logs ###
+GET {{baseUrl}}/api/ActivityLogs
+Accept: application/json

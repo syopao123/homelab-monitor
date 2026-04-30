@@ -1,6 +1,7 @@
 using System.Net.Security;
 using Api.Controllers;
 using Api.Data;
+using Api.Filters;
 using Api.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -16,7 +17,10 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 builder.Services.AddOpenApi();
-builder.Services.AddControllers();
+builder.Services.AddControllers( options =>
+{
+    options.Filters.Add<NodeFilter>();
+});
 builder.Services.AddHttpClient<IProxmoxService, ProxmoxService>()
     .ConfigurePrimaryHttpMessageHandler(() =>
         new HttpClientHandler
@@ -26,6 +30,8 @@ builder.Services.AddHttpClient<IProxmoxService, ProxmoxService>()
         }
     );
 
+builder.Services.AddScoped<NodeContext>();
+builder.Services.AddScoped<NodeFilter>();
 builder.Services.AddScoped<IHostManagerService, HostManagerService>();
 builder.Services.AddScoped<INodeManagerService, NodeManagerService>();
 builder.Services.AddScoped<IResourcesManagerService, ResourcesManagerService>();

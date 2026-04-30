@@ -10,16 +10,18 @@ namespace Api.Controllers
     public class ActivityLogsController : ControllerBase
     {
         private readonly IActivityLogsManagerService _logsManager;
+        private readonly NodeContext _nodeContext;
 
-        public ActivityLogsController(IActivityLogsManagerService logsManager)
+        public ActivityLogsController(IActivityLogsManagerService logsManager, NodeContext nodeContext)
         {
             _logsManager = logsManager;
+            _nodeContext = nodeContext;
         }
 
-        [HttpGet("{nodeName}")]
-        public async Task<ActionResult<List<ActivityLogDto>>> GetLogsAsync(string nodeName)
+        [HttpGet]
+        public async Task<ActionResult<List<ActivityLogDto>>> GetLogs()
         {
-            return Ok(await _logsManager.GetLogsAsync(nodeName));
+            return Ok(await _logsManager.GetLogsAsync(_nodeContext.ActiveNodeName));
         }
     }
 }

@@ -23,7 +23,6 @@ namespace Api.Controllers
             _hostManagerService = hostManagerService;
         }
 
-        // Tests the connection of a given Proxmox Host
         [HttpPost("test-connection")]
         public async Task<IActionResult> TestConnection(CreateHostRequestDto request)
         {
@@ -37,17 +36,17 @@ namespace Api.Controllers
             return Ok(await _hostManagerService.GetHostByIdAsync(id));
         }
 
-        [HttpPost("register-host")]
+        [HttpGet("list")]
+        public async Task<IActionResult> GetHosts()
+        {
+            return Ok(await _hostManagerService.GetHostsAsync());
+        }
+
+        [HttpPost("register")]
         public async Task<ActionResult<ProxmoxHostDto>> RegisterHost(CreateHostRequestDto dto)
         {
             var result = await _hostManagerService.RegisterHostAsync(dto);
             return CreatedAtAction(nameof(GetHostById), new { id = result.Id }, result);
-        }
-
-        [HttpGet("proxmox-hosts")]
-        public async Task<IActionResult> GetHosts()
-        {
-            return Ok(await _hostManagerService.GetHostsAsync());
         }
 
         [HttpPut("{id}")]

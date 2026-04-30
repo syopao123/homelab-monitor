@@ -5,8 +5,8 @@ namespace Api.Services;
 
 public interface INodeManagerService
 {
-    Task<string> GetSelectedNodeNameAsync();
+    Task<string> GetActiveNodeNameAsync();
     Task<List<NodeDto>> GetNodesAsync();
-    Task<bool> UpdateSelectedNodeAsync(string nodeName);
+    Task<bool> ActivateNodeAsync(string nodeName);
     Task<NodeDashboardDto> GetNodeDashboardAsync(string nodeName);
 }

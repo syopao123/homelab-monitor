@@ -20,7 +20,7 @@ public class NodeManagerService : INodeManagerService
         _context = context;
     }
 
-    public async Task<string> GetSelectedNodeNameAsync()
+    public async Task<string> GetActiveNodeNameAsync()
     {
         var activeHost = await _context.ProxmoxHosts.FirstOrDefaultAsync<ProxmoxHost>(h => h.IsActive == true);
         if (activeHost is null)
@@ -51,7 +51,7 @@ public class NodeManagerService : INodeManagerService
         return nodes;
     }
 
-    public async Task<bool> UpdateSelectedNodeAsync(string nodeName)
+    public async Task<bool> ActivateNodeAsync(string nodeName)
     {
         // Get active host
         var activeHost = await _context.ProxmoxHosts.FirstOrDefaultAsync<ProxmoxHost>(h => h.IsActive == true);
