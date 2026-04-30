@@ -8,9 +8,9 @@ namespace Web.Services;
 public interface IHomeLabApiService
 {
     Task<string> GetSelectedNodeNameAsync();
-    Task<NodeDashboardDto> GetNodeDashboardDtoAsync(string nodeName);
-    Task<List<WorkloadDto>> GetResourcesAsync(string nodeName);
-    Task<List<ActivityLogDto>> GetActivityLogsAsync(string nodeName);
-    Task<List<StorageDto>> GetStoragesAsync(string nodeName);
+    Task<NodeDashboardDto> GetNodeDashboardDtoAsync();
+    Task<List<WorkloadDto>> GetResourcesAsync();
+    Task<List<ActivityLogDto>> GetActivityLogsAsync();
+    Task<List<StorageDto>> GetStorageAsync();
     
 }

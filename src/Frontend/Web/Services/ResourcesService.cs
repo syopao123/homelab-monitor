@@ -12,8 +12,8 @@ public class ResourcesService : IResourcesService
         _apiService = apiService;
     }
 
-    public async Task<List<WorkloadDto>> GetResourcesAsync(string nodeName)
+    public async Task<List<WorkloadDto>> GetResourcesAsync()
     {
-        return await _apiService.GetResourcesAsync(nodeName);
+        return await _apiService.GetResourcesAsync();
     }
 }

@@ -5,6 +5,6 @@ namespace Web.Services;
 
 public interface IActivityLogsService
 {
-    Task<List<ActivityLogDto>> GetActivityLogsAsync(string nodeName);
+    Task<List<ActivityLogDto>> GetLogsAsync();
 
 }

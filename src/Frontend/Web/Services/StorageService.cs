@@ -12,8 +12,8 @@ public class StorageService : IStorageService
         _apiService = apiService;
     }
 
-    public async Task<List<StorageDto>> GetStoragesAsync(string nodeName)
+    public async Task<List<StorageDto>> GetStorageAsync()
     {
-        return await _apiService.GetStoragesAsync(nodeName);
+        return await _apiService.GetStorageAsync();
     }
 }

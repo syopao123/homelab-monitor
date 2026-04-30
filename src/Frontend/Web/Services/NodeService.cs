@@ -16,15 +16,9 @@ public class NodeService : INodeService
         _apiService = apiService;
     }
 
-    public async Task<NodeDashboardDto> GetNodeDashboardAsync(string nodeName)
+    public async Task<NodeDashboardDto> GetNodeDashboardAsync()
     {
-        return await _apiService.GetNodeDashboardDtoAsync(nodeName);
-    }
-
-    public async Task<string> GetSelectedNodeNameAsync()
-    {
-        var nodeName = await _apiService.GetSelectedNodeNameAsync();
-        return nodeName;
+        return await _apiService.GetNodeDashboardDtoAsync();
     }
 
     public async Task<List<NodeDto>> GetNodesAsync()

@@ -9,6 +9,5 @@ public interface INodeService
     Task<List<NodeDto>> GetNodesAsync();
     Task<bool> UpdateSelectedNodeAsync(string nodeName);
 
-    Task<NodeDashboardDto> GetNodeDashboardAsync(string nodeName);
-    Task<string> GetSelectedNodeNameAsync();
+    Task<NodeDashboardDto> GetNodeDashboardAsync();
 }

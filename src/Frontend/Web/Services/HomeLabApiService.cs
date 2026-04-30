@@ -29,19 +29,19 @@ public class HomeLabApiService : IHomeLabApiService
         }
     }
 
-    public async Task<NodeDashboardDto> GetNodeDashboardDtoAsync(string nodeName)
+    public async Task<NodeDashboardDto> GetNodeDashboardDtoAsync()
     {
-        var nodeDashboard = await _httpClient.GetFromJsonAsync<NodeDashboardDto>($"api/Node/{nodeName}/dashboard");
+        var nodeDashboard = await _httpClient.GetFromJsonAsync<NodeDashboardDto>($"api/Node/dashboard");
         if (nodeDashboard is null)
             throw new Exception("Node not found");
         return nodeDashboard;
     }
 
-    public async Task<List<WorkloadDto>> GetResourcesAsync(string nodeName)
+    public async Task<List<WorkloadDto>> GetResourcesAsync()
     {
         try
         {
-            var resources = await _httpClient.GetFromJsonAsync<List<WorkloadDto>>($"api/Resources/{nodeName}");
+            var resources = await _httpClient.GetFromJsonAsync<List<WorkloadDto>>($"api/Resources");
             if (resources is null)
                 throw new Exception("Node not found");
             return resources;
@@ -52,17 +52,17 @@ public class HomeLabApiService : IHomeLabApiService
         }
     }
 
-    public async Task<List<ActivityLogDto>> GetActivityLogsAsync(string nodeName)
+    public async Task<List<ActivityLogDto>> GetActivityLogsAsync()
     {
-        var logs = await _httpClient.GetFromJsonAsync<List<ActivityLogDto>>($"api/ActivityLogs/{nodeName}");
+        var logs = await _httpClient.GetFromJsonAsync<List<ActivityLogDto>>($"api/ActivityLogs");
         if (logs is null)
             throw new Exception("Node not found");
         return logs;
     }
 
-    public async Task<List<StorageDto>> GetStoragesAsync(string nodeName)
+    public async Task<List<StorageDto>> GetStorageAsync()
     {
-        var storages = await _httpClient.GetFromJsonAsync<List<StorageDto>>($"api/Storage/{nodeName}");
+        var storages = await _httpClient.GetFromJsonAsync<List<StorageDto>>($"api/Storage");
         if (storages is null)
             throw new Exception("Node not found");
         return storages;

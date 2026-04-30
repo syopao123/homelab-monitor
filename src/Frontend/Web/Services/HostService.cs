@@ -29,7 +29,7 @@ public class HostService : IHostService
         try
         {
             // Get list of hosts
-            var proxmoxHosts = await _httpClient.GetFromJsonAsync<List<ProxmoxHostDto>>("api/Host/proxmox-hosts");
+            var proxmoxHosts = await _httpClient.GetFromJsonAsync<List<ProxmoxHostDto>>("api/Host/list");
             if (proxmoxHosts is null)
                 return new List<ProxmoxHostDto>();
             return proxmoxHosts;

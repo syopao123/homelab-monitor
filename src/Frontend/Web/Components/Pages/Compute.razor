@@ -93,14 +93,12 @@
 @code {
     private string searchString = "";
     private bool _loading;
-    private string ActiveNodeName { get; set; } = "";
     private List<WorkloadDto> resources = new();
 
     protected override async Task OnInitializedAsync()
     {
         _loading = true;
-        ActiveNodeName = await _nodeService.GetSelectedNodeNameAsync();
-        resources = await _resourceService.GetResourcesAsync(ActiveNodeName);
+        resources = await _resourceService.GetResourcesAsync();
         _loading = false;
     }
 

@@ -64,8 +64,6 @@
 @code {
     private bool _isLoading { get; set; } = false;
     private readonly CancellationTokenSource _cts = new();
-
-    private string ActiveNodeName { get; set; } = "";
     private NodeDashboardDto nodeDashboard = new();
 
     // TODO: Implement notification or alert when API is lost.
@@ -74,7 +72,6 @@
         _isLoading = true;
         try
         {
-            ActiveNodeName = await _nodeService.GetSelectedNodeNameAsync();
             await LoadDashboardAsync();
             _ = RunRefreshLoop();
             _isLoading = false;
@@ -87,7 +84,7 @@
 
     private async Task LoadDashboardAsync()
     {
-        nodeDashboard = await _nodeService.GetNodeDashboardAsync(ActiveNodeName);
+        nodeDashboard = await _nodeService.GetNodeDashboardAsync();
         if (nodeDashboard is null)
             _isLoading = true;
         else

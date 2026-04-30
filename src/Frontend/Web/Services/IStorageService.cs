@@ -5,5 +5,5 @@ namespace Web.Services;
 
 public interface IStorageService
 {
-    Task<List<StorageDto>> GetStoragesAsync(string nodeName);
+    Task<List<StorageDto>> GetStorageAsync();
 }

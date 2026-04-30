@@ -6,6 +6,6 @@ namespace Web.Services;
 public interface IResourcesService
 {
 
-    Task<List<WorkloadDto>> GetResourcesAsync(string nodeName);
+    Task<List<WorkloadDto>> GetResourcesAsync();
 
 }

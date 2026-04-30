@@ -95,11 +95,9 @@
     protected override async Task OnInitializedAsync()
     {
         try {
-        var nodeName = await _nodeService.GetSelectedNodeNameAsync();
-        _activityLogs = await _logsService.GetActivityLogsAsync(nodeName);
+        _activityLogs = await _logsService.GetLogsAsync();
         } catch (Exception ex) {
             Console.WriteLine(ex.Message);
         }
     }
-
 }

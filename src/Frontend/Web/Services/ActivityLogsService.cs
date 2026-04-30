@@ -12,8 +12,8 @@ public class ActivityLogsService : IActivityLogsService
         _apiService = apiService;
     }
 
-    public async Task<List<ActivityLogDto>> GetActivityLogsAsync(string nodeName)
+    public async Task<List<ActivityLogDto>> GetLogsAsync()
     {
-        return await _apiService.GetActivityLogsAsync(nodeName);        
+        return await _apiService.GetActivityLogsAsync();        
     }
 }

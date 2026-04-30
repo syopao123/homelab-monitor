@@ -52,10 +52,7 @@
         try
         {
             _isLoading = true;
-            var nodeName = await _nodeService.GetSelectedNodeNameAsync();
-            if (nodeName is null)
-                throw new Exception("No node name found");
-            _storageList = await _storageService.GetStoragesAsync(nodeName);
+            _storageList = await _storageService.GetStorageAsync();
             _isLoading = false;
         }
         catch (Exception ex)
