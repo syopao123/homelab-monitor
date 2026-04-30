@@ -1,6 +1,6 @@
 @baseUrl = http://localhost:5088
 @id = 019d627a-5d19-7de4-9885-e12fe9187db9
-@deleteId = 019dded9-d696-77b3-a430-6c63b46bb788
+@deleteId = temp
 
 @hostName = pve
 @serverUrl = https://192.168.1.200:8006/
