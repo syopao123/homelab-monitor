@@ -1,15 +1,14 @@
-# HomeLab Monitor
+# Homelab Monitor
 
 A Proxmox VE monitoring dashboard built with ASP.NET Core and Blazor.
 
 ## Overview
-HomeLab Monitor provides a real-time view of a Proxmox host's resources, including CPU, memory, storage, virtual machines, LXC containers, and activity logs - all retrieved through the Proxmox API.
+Homelab Monitor provides a real-time view of a Proxmox host's resources, including CPU, memory, storage, virtual machines, LXC containers, and activity logs - all retrieved through the Proxmox API.
 
 ## Tech Stack
 - **Backend:** ASP.NET Core 10 Web API
-- **Frontend:** Blazor Web App (MudBlazor)
+- **Frontend:** Blazor (MudBlazor)
 - **Database:** PostgreSQL with Entity Framework Core
-- **Architecture:** Decoupled Architecture
 
 ## Features
 - Dashboard with live node metrics
@@ -17,3 +16,25 @@ HomeLab Monitor provides a real-time view of a Proxmox host's resources, includi
 - Storage pool overview
 - Activity log with status tracking
 - Settings for managing Proxmox host connections
+
+## Screenshots
+
+<figure align="center">
+    <img src="screenshots/dashboard.png" alt="Dashboard" style="border: 1px solid black">
+    <small><em>Dashboard</em></small>
+</figure>
+
+<figure align="center">
+    <img src="screenshots/compute.png" alt="Dashboard" style="border: 1px solid black">
+    <small><em>Compute</em></small>
+</figure>
+
+<figure align="center">
+    <img src="screenshots/storage.png" alt="Dashboard" style="border: 1px solid black">
+    <small><em>Storage</em></small>
+</figure>
+
+<figure align="center">
+    <img src="screenshots/activity-logs.png" alt="Dashboard" style="border: 1px solid black">
+    <small><em>Activity Logs</em></small>
+</figure>
