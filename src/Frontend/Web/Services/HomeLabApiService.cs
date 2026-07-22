@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json;
 using Shared.Dtos;
 using Shared.Dtos.Nodes;
 using Shared.Dtos.Storage;
@@ -12,6 +13,18 @@ public class HomeLabApiService : IHomeLabApiService
     public HomeLabApiService(HttpClient client)
     {
         _httpClient = client;
+    }
+
+    public async Task RegisterHostAsync(CreateHostDto hostDto)
+    {
+        var response = await _httpClient.PostAsJsonAsync("api/Host/register", hostDto);
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorContent = await response.Content.ReadFromJsonAsync<JsonElement>();
+            var errorMessage = errorContent.GetProperty("error").GetString();
+            throw new HttpRequestException(errorMessage);
+            // Find a way to get this exception message to a snackbar
+        }
     }
 
     public async Task<string> GetSelectedNodeNameAsync()
@@ -66,5 +79,35 @@ public class HomeLabApiService : IHomeLabApiService
         if (storages is null)
             throw new Exception("Node not found");
         return storages;
+    }
+
+    public async Task<List<ProxmoxHostDto>> GetHostsAsync()
+    {
+        try
+        {
+            // Get list of hosts
+            var proxmoxHosts = await _httpClient.GetFromJsonAsync<List<ProxmoxHostDto>>("api/Host/list");
+            if (proxmoxHosts is null)
+                return new List<ProxmoxHostDto>();
+            return proxmoxHosts;
+        }
+        catch (Exception)
+        {
+            return new List<ProxmoxHostDto>();
+        }
+    }
+
+    // Check connection status of current active host
+    public async Task<string> CheckActiveHostStatusAsync()
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync("ping");
+            return response.IsSuccessStatusCode.ToString();
+        }
+        catch (HttpRequestException)
+        {
+            return $"API Connection Error";
+        }
     }
 }

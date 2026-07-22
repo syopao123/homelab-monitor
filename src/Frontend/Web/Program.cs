@@ -13,12 +13,9 @@ builder.Services.AddScoped<ProtectedLocalStorage>(); // For storing app's UI set
 builder.Services.AddScoped<IResourcesService, ResourcesService>();
 builder.Services.AddScoped<IActivityLogsService, ActivityLogsService>();
 builder.Services.AddScoped<IStorageService, StorageService>();
+builder.Services.AddScoped<IHostService, HostService>();
 
-// TODO: Remove these three HttpClients and replace with a single HttpClient only
-builder.Services.AddHttpClient<IHostService, HostService>(client =>
-{
-    client.BaseAddress = new Uri("http://localhost:5088/");
-});
+// TODO: Remove these two HttpClients and replace with a single HttpClient only
 builder.Services.AddHttpClient<INodeService, NodeService>(client =>
 {
     client.BaseAddress = new Uri("http://localhost:5088/");

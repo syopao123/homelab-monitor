@@ -24,9 +24,9 @@ namespace Api.Controllers
         }
 
         [HttpPost("test-connection")]
-        public async Task<IActionResult> TestConnection(CreateHostRequestDto request)
+        public async Task<IActionResult> TestConnection(CreateHostDto request)
         {
-            await _proxmoxService.TestConnectionAsync(request);
+            await _proxmoxService.TestConnectionAsync(request.ServerUrl, request.ApiToken);
             return Ok(new { Message = "Connected to Proxmox" });
         }
 
@@ -43,9 +43,9 @@ namespace Api.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<ProxmoxHostDto>> RegisterHost(CreateHostRequestDto dto)
+        public async Task<ActionResult<ProxmoxHostDto>> RegisterHost([FromBody] CreateHostDto hostDto)
         {
-            var result = await _hostManagerService.RegisterHostAsync(dto);
+            var result = await _hostManagerService.RegisterHostAsync(hostDto);
             return CreatedAtAction(nameof(GetHostById), new { id = result.Id }, result);
         }
 

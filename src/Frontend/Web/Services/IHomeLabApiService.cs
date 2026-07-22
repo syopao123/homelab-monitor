@@ -7,10 +7,12 @@ namespace Web.Services;
 
 public interface IHomeLabApiService
 {
+    Task RegisterHostAsync(CreateHostDto hostDto);
     Task<string> GetSelectedNodeNameAsync();
     Task<NodeDashboardDto> GetNodeDashboardDtoAsync();
     Task<List<WorkloadDto>> GetResourcesAsync();
     Task<List<ActivityLogDto>> GetActivityLogsAsync();
     Task<List<StorageDto>> GetStorageAsync();
-    
+    Task<List<ProxmoxHostDto>> GetHostsAsync();
+    Task<string> CheckActiveHostStatusAsync();
 }

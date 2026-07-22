@@ -78,11 +78,15 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // Check API connection
-        var apiResponse = await _hostService.CheckApiStatusAsync();
+        // Check API connection of active host
+        var apiResponse = await _hostService.CheckBackendStatusAsync();
         if (apiResponse.Contains("Error"))
             errors.Add(apiResponse);
+        await RetrieveHosts();
+    }
 
+    private async Task RetrieveHosts()
+    {
         // Retrieve hosts
         var results = await _hostService.GetHostsAsync();
         if (results != null)
@@ -100,7 +104,7 @@
         }
     }
 
-    private Task OpenDialogAsync()
+    private async Task OpenDialogAsync()
     {
         var options = new DialogOptions
         {
@@ -110,6 +114,12 @@
             FullWidth = true
         };
 
-        return DialogService.ShowAsync<AddProxmoxHost>("Simple Dialog", options);
+        var dialog = await DialogService.ShowAsync<AddProxmoxHost>("Simple Dialog", options);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            await RetrieveHosts();
+            StateHasChanged();
+        }
     }
 }

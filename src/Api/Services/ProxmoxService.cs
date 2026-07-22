@@ -31,9 +31,9 @@ public class ProxmoxService : IProxmoxService
         }
     }
 
-    public async Task<bool> TestConnectionAsync(CreateHostRequestDto request)
+    public async Task<bool> TestConnectionAsync(string serverUrl, string apiToken)
     {
-        ApplyRequestHeaders(request.ServerUrl, request.ApiToken);
+        ApplyRequestHeaders(serverUrl, apiToken);
         try
         {
             // Check for response

@@ -19,9 +19,9 @@ public class HostManagerService : IHostManagerService
         _context = context;
     }
 
-    public async Task<ProxmoxHostDto> RegisterHostAsync(CreateHostRequestDto dto)
+    public async Task<ProxmoxHostDto> RegisterHostAsync(CreateHostDto dto)
     {
-        var isReachable = await _proxmoxService.TestConnectionAsync(dto);
+        var isReachable = await _proxmoxService.TestConnectionAsync(dto.ServerUrl, dto.ApiToken);
         if (!isReachable)
         {
             throw new ProxmoxConnectionException(
@@ -33,8 +33,7 @@ public class HostManagerService : IHostManagerService
             HostName = dto.HostName,
             ServerUrl = dto.ServerUrl,
             ApiToken = dto.ApiToken,
-            CreatedAt = DateTime.UtcNow,
-            IsActive = false,
+            CreatedAt = DateTime.UtcNow
         };
         _context.ProxmoxHosts.Add(newHost);
         await _context.SaveChangesAsync();
@@ -44,7 +43,7 @@ public class HostManagerService : IHostManagerService
             Id = newHost.Id,
             HostName = newHost.HostName,
             ServerUrl = newHost.ServerUrl,
-            ApiToken = newHost.ApiToken,
+            ApiToken = newHost.ApiToken
         };
     }
 
@@ -81,16 +80,10 @@ public class HostManagerService : IHostManagerService
             : dto.ServerUrl;
         var finalApiToken = string.IsNullOrWhiteSpace(dto.ApiToken) ? host.ApiToken : dto.ApiToken;
         // Verify connection
-        var createHostRequest = new CreateHostRequestDto
-        {
-            HostName = finalHostName,
-            ServerUrl = finalServerUrl,
-            ApiToken = finalApiToken,
-        };
-        var isReachable = await _proxmoxService.TestConnectionAsync(createHostRequest);
+        var isReachable = await _proxmoxService.TestConnectionAsync(finalServerUrl, finalApiToken);
         if (!isReachable)
             throw new ProxmoxConnectionException(
-                $"Failed to reach Proxmox node at {createHostRequest.ServerUrl} ({createHostRequest.HostName}, {createHostRequest.ApiToken})."
+                $"Failed to reach Proxmox node at {finalServerUrl} ({finalHostName}, {finalApiToken})."
             );
         // Proceed to updating host
         host.HostName = finalHostName;

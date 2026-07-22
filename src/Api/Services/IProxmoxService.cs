@@ -5,8 +5,7 @@ namespace Api.Services;
 
 public interface IProxmoxService
 {
-    // We use Task because network calls should always be Asynchronous
-    Task<bool> TestConnectionAsync(CreateHostRequestDto request);
+    Task<bool> TestConnectionAsync(string serverUrl, string apiToken);
 
     Task<JsonElement> GetNodesAsync(string url, string token);
 
