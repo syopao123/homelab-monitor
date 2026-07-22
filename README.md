@@ -21,20 +21,24 @@ Homelab Monitor provides a real-time view of a Proxmox host's resources, includi
 
 <figure align="center">
     <img src="screenshots/dashboard.png" alt="Dashboard" style="border: 1px solid black">
-    <figcaption><small>Dashboard</small></figcaption>
 </figure>
 
 <figure align="center">
-    <img src="screenshots/compute.png" alt="Dashboard" style="border: 1px solid black">
-    <figcaption><small>Compute</small></figcaption>
+    <img src="screenshots/compute.png" alt="Compute" style="border: 1px solid black">
 </figure>
 
 <figure align="center">
-    <img src="screenshots/storage.png" alt="Dashboard" style="border: 1px solid black">
-    <figcaption><small>Storage</small></figcaption>
+    <img src="screenshots/storage-1.png" alt="Storage-1" style="border: 1px solid black">
 </figure>
 
 <figure align="center">
-    <img src="screenshots/activity-logs.png" alt="Dashboard" style="border: 1px solid black">
-    <figcaption><small>Activity Logs</small></figcaption>
+    <img src="screenshots/storage-2.png" alt="Storage-2" style="border: 1px solid black">
+</figure>
+
+<figure align="center">
+    <img src="screenshots/activity-logs.png" alt="Activity Logs" style="border: 1px solid black">
+</figure>
+
+<figure align="center">
+    <img src="screenshots/settings.png" alt="Settings" style="border: 1px solid black">
 </figure>
