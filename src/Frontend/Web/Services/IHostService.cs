@@ -5,7 +5,8 @@ namespace Web.Services;
 
 public interface IHostService
 {
-    Task<string> CheckApiStatusAsync();
+    Task<string> CheckBackendStatusAsync();
     Task<List<ProxmoxHostDto>> GetHostsAsync();
     Task<bool> SetActiveHostAsync(Guid id);
+    Task RegisterHostAsync(CreateHostDto hostDto);
 }

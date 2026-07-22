@@ -4,40 +4,26 @@ namespace Web.Services;
 
 public class HostService : IHostService
 {
-    private readonly HttpClient _httpClient;
+    private readonly IHomeLabApiService _api;
 
-    public HostService(HttpClient client)
+    public HostService(IHomeLabApiService api)
     {
-        _httpClient = client;
+        _api = api;
     }
 
-    public async Task<string> CheckApiStatusAsync()
+    public async Task<string> CheckBackendStatusAsync()
     {
-        try
-        {
-            var response = await _httpClient.GetAsync("ping");
-            return response.IsSuccessStatusCode.ToString();
-        }
-        catch (HttpRequestException)
-        {
-            return $"API Connection Error";
-        }
+        return await _api.CheckActiveHostStatusAsync();
     }
 
     public async Task<List<ProxmoxHostDto>> GetHostsAsync()
     {
-        try
-        {
-            // Get list of hosts
-            var proxmoxHosts = await _httpClient.GetFromJsonAsync<List<ProxmoxHostDto>>("api/Host/list");
-            if (proxmoxHosts is null)
-                return new List<ProxmoxHostDto>();
-            return proxmoxHosts;
-        }
-        catch (Exception)
-        {
-            return new List<ProxmoxHostDto>();
-        }
+        return await _api.GetHostsAsync();
+    }
+
+    public async Task RegisterHostAsync(CreateHostDto hostDto)
+    {
+        await _api.RegisterHostAsync(hostDto);
     }
 
     public Task<bool> SetActiveHostAsync(Guid id)
